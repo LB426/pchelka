@@ -31,3 +31,7 @@ test on server
 
 class FooController < ApplicationController
   protect_from_forgery except: :index
+
+git rm --cached config/database.yml
+
+ssh -N -R 23307:127.0.0.1:3306 bliz@tih.kuban.ru
