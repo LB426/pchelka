@@ -12,7 +12,7 @@
     <% if current_user %>
       <%= current_user.login %> |
       <%= link_to "Logout", logout_path %> |
-      <%= link_to "Queue", api_queue_path %>
+      <%= link_to "API test", api_test_path %>
     <% else %>
       <%= link_to "Signup", "sign_up_path" %> or
       <%= link_to "login", login_path %>
