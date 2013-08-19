@@ -1,6 +1,8 @@
 Bee2::Application.routes.draw do
 
-  get "api/queue"
+
+  get "api/:login/:password/queue" => 'api#queue', :as => 'api_queue'
+  get "api/test" => 'api#test', :as => 'api_test'
   
   controller :sessions do
     get 'login' => :new
