@@ -1,2 +1,10 @@
-<h1>Api#queue</h1>
-<p>Find me in app/views/api/queue.html.erb</p>
+<table border="1">
+<% @data.each do |d| %>
+	<tr>
+		<td><%= d['name'] %></td>
+		<% d['queue'].each do |q| %>
+			<td><%= q %></td>
+		<% end %>
+	</tr>
+<% end %>
+</table>
