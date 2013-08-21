@@ -20,6 +20,8 @@ class ApiController < ApplicationController
     						{'name' => 'рынок', 'queue' => [2,4,6] },
     						{'name' => 'та сторона', 'queue' => [8,9,10] }
     					]
+    else
+    	
     end
     render :layout => false
   end
