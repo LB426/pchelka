@@ -1,11 +1,22 @@
-<table border="1">
-<% @data.each do |d| %>
+<table border="1" cellspacing="0" cellpadding="0" width="100%">
+	<% for i in 1..@num_queues do %>
 	<tr>
-		<td><%= d['name'] %></td>
-		<% d['queue'].each do |q| %>
-			<td><%= q %></td>
+		<td><%= @points[i]['name'] %></td>
+		<% @points[i]['queue'].each do |q| %>
+			<% if q['car_num'] == @user.car %>
+				<td bgcolor="lightgreen" align="center">
+					<font color="black" face="Geneva, Arial" size="3">
+					<%= q['car_num'] %>
+					</font>
+				</td>
+			<% else %>
+				<td align="center">
+					<font color="black" face="Geneva, Arial" size="3">
+						<%= q['car_num'] %>
+					</font>
+				</td>
+			<% end %>
 		<% end %>
 	</tr>
-<% end %>
+	<% end %>
 </table>
-<%= @q.getall %>
