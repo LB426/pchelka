@@ -1,6 +1,6 @@
 Bee2::Application.routes.draw do
 
-
+  get "api/:login/:password/order" => 'api#order', :as => 'api_order'
   get "api/:login/:password/queue" => 'api#queue', :as => 'api_queue'
   get "api/test" => 'api#test', :as => 'api_test'
   

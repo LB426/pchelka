@@ -28,6 +28,7 @@ class TaxiQueue < RemoteDB
 		# получаем таблицу из БД
 		query = "select * from cqueue where row != 0 order by row asc"
 		@table = connection.select_all(query) #select_all is important!
+
 		# формируем массив с номерами очередей
 		rows = []
 		@table.each	do |r|
@@ -57,6 +58,22 @@ class TaxiQueue < RemoteDB
 		logger.debug "---------------------------"
 		logger.debug @points
 
+		rescue Exception => msg
+			logger.debug msg
+			@table = nil
+	end
+end
+
+class TaxiOrder < RemoteDB
+	self.table_name = 'zakazi'
+
+	def initialize
+	end
+
+	def order(car)
+		query = "SELECT adres,zakaz,telefon,kode,dat,tim,car,uvedomlen,memo FROM zakazi WHERE car = " + car.to_s + ";"
+		order = connection.select_all(query)
+		order
 	end
 
 end
