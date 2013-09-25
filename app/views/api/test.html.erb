@@ -1,4 +1,4 @@
 <ul>
-	<li><%= link_to "Тест запроса очереди", api_queue_path('user1','1234') %></li>
-	<li><%= link_to "Тест запроса заказа", api_order_path('user1','1234') %></li>
+	<li><%= link_to "Тест запроса очереди", api_queue_path(current_user.login,current_user.password) %></li>
+	<li><%= link_to "Тест запроса заказа", api_order_path(current_user.login,current_user.password) %></li>
 </ul>
