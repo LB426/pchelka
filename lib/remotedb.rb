@@ -74,6 +74,19 @@ class TaxiOrder < RemoteDB
 		query = "SELECT adres,zakaz,telefon,kode,dat,tim,car,uvedomlen,memo FROM zakazi WHERE car = " + car.to_s + ";"
 		order = connection.select_all(query)
 		order
+		rescue Exception => e
+			logger.debug "Exception db connection :  #{e.message} "
+			raise "Remote database connection failed"
+	end
+
+	def order_set_uvedomlen(car, uvedomlen)
+		sql = "update taxi.zakazi set uvedomlen=#{uvedomlen} where car=#{car}"
+		r = connection.update_sql(sql)
+		logger.debug "row updated = #{r}"
+		r.to_i
+		rescue Exception => e
+			logger.debug "Exception db connection :  #{e.message} "
+			raise "Remote database connection failed"
 	end
 
 end
