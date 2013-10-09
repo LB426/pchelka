@@ -15,6 +15,7 @@ Bee2::Application.routes.draw do
   get "about/index"
   root 'about#index'
 
+  post '*a', :to => 'about#errors'
   get '*a', :to => 'about#errors'
   
   # The priority is based upon order of creation: first created -> highest priority.
