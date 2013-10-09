@@ -5,7 +5,7 @@ class ApplicationController < ActionController::Base
   
   helper_method :current_user
   helper_method :current_user?
-  
+
 private
 
   def current_user
@@ -20,5 +20,5 @@ private
     redirect_to login_path
     return false
   end
-  
+
 end
