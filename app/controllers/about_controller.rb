@@ -1,5 +1,10 @@
+require 'remotedb2.rb'
+
 class AboutController < ApplicationController
   def index
+  	#q = RemoteDB2.new
+  	#q.get_cqueue
+  	#logger.debug q
   end
 
   def errors
