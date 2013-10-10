@@ -20,7 +20,7 @@ class ApiController < ApplicationController
       render :json => res
     end
     rescue Exception => e
-      logger.debug "Exception : #{e.message} "
+      logger.debug "Exception in ApiController: #{e.message} "
       res = { :error => e.message, :result => nil }
       render :json => res
   end

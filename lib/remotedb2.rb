@@ -19,34 +19,44 @@ module TaxiDB
 		# количество точек - стоянок такси							
 		num_queues = points.size
 		# получаем таблицу из БД
-		client = Mysql2::Client.new(:host => "127.0.0.1", :port => 20027, :username => "dba", :password => "sql", :database => 'taxi')
+		client = Mysql2::Client.new(:host => "127.0.0.1", :port => 21023, :username => "dba", :password => "sql", :database => 'taxi')
 		table = client.query("select * from cqueue where row != 0 order by row asc")
 		# формируем массив с номерами очередей
 		rows = []
 		table.each	do |r|
+			if r != nil
 			rows << r['row']
+			end
 		end
 		rows.uniq!
 		rows.each do |q|
 			queue_places = []
 			table.each	do |r|
+				if r != nil
 				if r['row'] == q
 					queue_places << r['col']
 				end
+				end
 			end
 			queue_places.sort!
-			Rails.logger.debug "---------------------------"
+			Rails.logger.debug "1---------------------------"
 			Rails.logger.debug queue_places
 
 			queue_places.each do |p|
 				table.each do |r|
+					if r != nil
 					if r['row'] == q && r['col'] == p
-						points[q]['queue'] << { 'car_num' => r['car'], 'car_state' => r['state'] }
+						if points[q] != nil
+							points[q]['queue'] << { 'car_num' => r['car'], 'car_state' => r['state'] }
+						else
+							Rails.logger.debug "4-#{q}--------------------------"
+						end
+					end
 					end
 				end
 			end
 		end
-		Rails.logger.debug "---------------------------"
+		Rails.logger.debug "end queue make---------------------------"
 		Rails.logger.debug points
 		return points
 
