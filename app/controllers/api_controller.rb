@@ -1,4 +1,5 @@
 require 'remotedb.rb'
+require 'remotedb2.rb'
 
 class ApiController < ApplicationController
   protect_from_forgery except: :order_update
@@ -6,18 +7,16 @@ class ApiController < ApplicationController
   def queue
   	@user = User.authenticate(params[:login], params[:password])
   	if @user
-  		queue = TaxiQueue.new
-      logger.debug "queue.table = #{queue.table.nil?}"
-      unless queue.table.nil?
-        @num_queues = queue.num_queues
-        @points = queue.points
-      else
-        redirect_to root_url, :notice => "Connect to REMOTEDB ERROR"
-      end
+       @points = TaxiDB.get_cqueue
+       @num_queues = @points.size
     else
-      flash.now.alert = "Invalid login or password"
-      redirect_to root_url, :notice => "Login or password incorrect"
+      res = { :error => "Login or password incorrect", :result => nil }
+      render :json => res
     end
+    rescue Exception => e
+      logger.debug "Exception : #{e.message} "
+      res = { :error => e.message, :result => nil }
+      render :json => res
   end
   
   def test
