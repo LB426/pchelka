@@ -7,8 +7,14 @@ class ApiController < ApplicationController
   def queue
   	@user = User.authenticate(params[:login], params[:password])
   	if @user
-       @points = TaxiDB.get_cqueue
-       @num_queues = @points.size
+      @points = TaxiDB.get_cqueue
+      @num_queues = @points.size
+      @max_col = 0
+      for i in 2..@num_queues do
+        if @points[i]['queue'].size > @max_col
+          @max_col = @points[i]['queue'].size
+        end
+      end
     else
       res = { :error => "Login or password incorrect", :result => nil }
       render :json => res
