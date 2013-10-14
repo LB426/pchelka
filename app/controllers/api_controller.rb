@@ -20,7 +20,7 @@ class ApiController < ApplicationController
       render :json => res
     end
     rescue Exception => e
-      logger.debug "Exception in ApiController: #{e.message} "
+      logger.debug "Exception in ApiController queue: #{e.message} "
       res = { :error => e.message, :result => nil }
       render :json => res
   end
@@ -51,7 +51,7 @@ class ApiController < ApplicationController
       redirect_to root_url, :notice => "Login or password incorrect"
     end
     rescue Exception => e
-      logger.debug "Exception db connection :  #{e.message} "
+      logger.debug "Exception in ApiController order :  #{e.message} "
       res = { :error => e.message, :result => nil }
       render :json => res
   end
@@ -81,7 +81,7 @@ class ApiController < ApplicationController
       redirect_to root_url, :notice => "Login or password incorrect"
     end
     rescue Exception => e
-      logger.debug "Exception db connection :  #{e.message} "
+      logger.debug "Exception in ApiController order_update : #{e.message} "
       res = { :error => e.message, :result => nil }
       render :json => res
   end
