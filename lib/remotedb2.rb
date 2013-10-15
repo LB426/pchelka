@@ -21,6 +21,7 @@ module TaxiDB
 		# получаем таблицу из БД
 		client = Mysql2::Client.new(:host => "127.0.0.1", :port => 21023, :username => "dba", :password => "sql", :database => 'taxi')
 		table = client.query("select * from cqueue where row != 0 order by row asc")
+		client.close
 		# формируем массив с номерами очередей
 		rows = []
 		table.each	do |r|
@@ -61,8 +62,42 @@ module TaxiDB
 		return points
 
 		rescue Exception => e
-			Rails.logger.debug "Exception :  #{e.message} "
-			raise "Remote database connection failed"
+			emessage = "Exception in remotedb2 get_cqueue :  #{e.message}"
+			Rails.logger.debug emessage
+			raise emessage
+			client.close
 	end
+
+        def TaxiDB.get_order(car)
+		client = Mysql2::Client.new(:host => "127.0.0.1", :port => 21023, :username => "dba", :password => "sql", :database => 'taxi')
+                sql = "SELECT adres,zakaz,telefon,kode,dat,tim,car,uvedomlen,memo FROM zakazi WHERE car = " + car.to_s + ";"
+		result = client.query(sql)
+		client.close
+                order = nil
+		result.each do |r|
+			order = r
+		end
+                order
+
+                rescue Exception => e
+			emessage = "Exception in remotedb2 get_order :  #{e.message}"
+			Rails.logger.debug emessage
+			raise emessage
+			client.close
+        end
+
+        def TaxiDB.set_uvedomlen(car, uvedomlen)
+		begin
+			client = Mysql2::Client.new(:host => "127.0.0.1", :port => 21023, :username => "dba", :password => "sql", :database => 'taxi')
+			result = client.query "update taxi.zakazi set uvedomlen='#{uvedomlen}' where car='#{car}'"
+		
+		rescue Mysql2::Error => e
+			Rails.logger.debug e
+			con.rollback
+		ensure
+			pst.close if pst
+			con.close if con
+		end
+        end
 
 end

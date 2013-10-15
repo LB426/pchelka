@@ -32,23 +32,17 @@ class ApiController < ApplicationController
   def order
     @user = User.authenticate(params[:login], params[:password])
     if @user
-      z = TaxiOrder.new
-      unless z.nil?
-        torder = z.order(@user.car)
-        logger.debug "torder = #{torder.empty? }"
-        unless torder.empty?
-          res = { :error => "none", :result => torder[0] }
+        order = TaxiDB.get_order(@user.car)
+        if order != nil
+          res = { :error => "none", :result => order }
           render :json => res
         else
           res = { :error => "none", :result => nil }
           render :json => res, :only => [:error, :result]
         end
-      else
-        redirect_to root_url, :notice => "Connect to REMOTEDB ERROR"
-      end
     else
-      flash.now.alert = "Invalid login or password"
-      redirect_to root_url, :notice => "Login or password incorrect"
+      res = { :error => "Login or password incorrect", :result => nil }
+      render :json => res
     end
     rescue Exception => e
       logger.debug "Exception in ApiController order :  #{e.message} "
@@ -60,25 +54,16 @@ class ApiController < ApplicationController
     @user = User.authenticate(params[:login], params[:password])
     if @user
       unless params[:uvedomlen].empty?
-        z = TaxiOrder.new
-        order = z.order(@user.car)
-        logger.debug "order = #{order.empty?}"
-        unless order.empty?
-          logger.debug "order = #{order[0]}"
-          r = z.order_set_uvedomlen(@user.car, params[:uvedomlen])
-          res = { :error => "none", :result => "row updated: #{r}" }
-          render :json => res
-        else
-          res = { :error => "order for car: #{@user.car} not found", :result => nil }
-          render :json => res
-        end
+        r = TaxiDB.set_uvedomlen(@user.car, params[:uvedomlen])
+        res = { :error => "none", :result => "row updated: #{r}" }
+        render :json => res
       else
         res = { :error => "params uvedomlen is empty", :result => nil }
         render :json => res
       end
     else
-      flash.now.alert = "Invalid login or password"
-      redirect_to root_url, :notice => "Login or password incorrect"
+      res = { :error => "Login or password incorrect", :result => nil }
+      render :json => res
     end
     rescue Exception => e
       logger.debug "Exception in ApiController order_update : #{e.message} "
