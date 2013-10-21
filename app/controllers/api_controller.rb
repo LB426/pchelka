@@ -3,6 +3,9 @@ class ApiController < ApplicationController
   
   def queue
   	@user = User.authenticate(params[:login], params[:password])
+    logger.debug @user.updated_at
+    logger.debug "request.remote_ip : #{request.remote_ip}"
+    logger.debug "request.env[\"HTTP_X_FORWARDED_FOR\"] : #{request.env['HTTP_X_FORWARDED_FOR']}"
   	if @user
       if request.env["HTTP_X_FORWARDED_FOR"].nil? == true
         @user.update_attribute(:ip, request.remote_ip)
