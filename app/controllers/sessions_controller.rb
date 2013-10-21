@@ -3,6 +3,8 @@ class SessionsController < ApplicationController
   end
   
   def create
+    logger.debug "request.remote_ip : #{request.remote_ip}"
+    logger.debug "request.env[\"HTTP_X_FORWARDED_FOR\"] : #{request.env['HTTP_X_FORWARDED_FOR']}"
     user = User.authenticate(params[:login], params[:password])
     if user
       if request.env["HTTP_X_FORWARDED_FOR"].nil? == true
