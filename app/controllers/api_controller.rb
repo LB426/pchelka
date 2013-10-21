@@ -4,6 +4,11 @@ class ApiController < ApplicationController
   def queue
   	@user = User.authenticate(params[:login], params[:password])
   	if @user
+      if request.env["HTTP_X_FORWARDED_FOR"].nil? == true
+        @user.update_attribute(:ip, request.remote_ip)
+      else
+        @user.update_attribute(:ip, request.env["HTTP_X_FORWARDED_FOR"])
+      end
   	  @points =	{
   								1 => { 'name' => 'на заказе', 'queue' => [] },
   								2 => { 'name' => 'Черёмушки', 'queue' => [] },
@@ -70,6 +75,11 @@ class ApiController < ApplicationController
   def order
     @user = User.authenticate(params[:login], params[:password])
     if @user
+      if request.env["HTTP_X_FORWARDED_FOR"].nil? == true
+        @user.update_attribute(:ip, request.remote_ip)
+      else
+        @user.update_attribute(:ip, request.env["HTTP_X_FORWARDED_FOR"])
+      end
       order = Zakazi.where("car = #{@user.car}")
       if order.size == 1
         res = { :error => "none",
@@ -102,6 +112,11 @@ class ApiController < ApplicationController
   def order_update
     @user = User.authenticate(params[:login], params[:password])
     if @user
+      if request.env["HTTP_X_FORWARDED_FOR"].nil? == true
+        @user.update_attribute(:ip, request.remote_ip)
+      else
+        @user.update_attribute(:ip, request.env["HTTP_X_FORWARDED_FOR"])
+      end
       unless params[:uvedomlen].empty?
         order = Zakazi.where("car = #{@user.car}")
         if order.size == 1
