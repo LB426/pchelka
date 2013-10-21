@@ -5,6 +5,11 @@ class SessionsController < ApplicationController
   def create
     user = User.authenticate(params[:login], params[:password])
     if user
+      if request.env["HTTP_X_FORWARDED_FOR"].nil? == true
+        user.update_attribute(:ip, request.remote_ip)
+      else
+        user.update_attribute(:ip, request.env["HTTP_X_FORWARDED_FOR"])
+      end
       session[:user_id] = user.id
       redirect_to root_url, :notice => "Logged in!"
     else
