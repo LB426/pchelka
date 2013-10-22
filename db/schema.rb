@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20131021114935) do
+ActiveRecord::Schema.define(version: 20131022162025) do
 
   create_table "abonenty", id: false, force: true do |t|
     t.integer "num"
@@ -152,6 +152,20 @@ ActiveRecord::Schema.define(version: 20131021114935) do
     t.integer "day"
     t.integer "week"
     t.integer "working"
+  end
+
+  create_table "point_queues", force: true do |t|
+    t.integer  "point_id"
+    t.integer  "car"
+    t.integer  "state"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "points", force: true do |t|
+    t.string   "name"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "streets", id: false, force: true do |t|

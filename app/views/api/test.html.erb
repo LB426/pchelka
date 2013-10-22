@@ -2,9 +2,18 @@
 	<li><%= link_to "Тест запроса очереди", api_queue_path(current_user.login,current_user.password) %></li>
 	<li><%= link_to "Тест запроса заказа", api_order_path(current_user.login,current_user.password) %></li>
 </ul>
-
+<hr>
 Order update<br>
 <%= form_tag(api_order_update_path(current_user.login,current_user.password), method: :post, authenticity_token: false) do -%>
 	<%= text_field_tag 'uvedomlen', '2' %>
+	<%= submit_tag 'Save' %>
+<% end %>
+<hr>
+Стать в очередь<br>
+<%= form_tag(api_qpush_path(current_user.login,current_user.password), method: :post, authenticity_token: false) do -%>
+	Идентификатор точки<br>
+	<%= text_field_tag 'point_id', '2' %><br>
+	Код состояния<br>
+	<%= text_field_tag 'state', '1' %><br>
 	<%= submit_tag 'Save' %>
 <% end %>
