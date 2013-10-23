@@ -1,5 +1,5 @@
 class ApiController < ApplicationController
-  protect_from_forgery except: :order_update
+  protect_from_forgery :except => [ :order_update, :push_in_queue ]
   
   def queue
   	@user = User.authenticate(params[:login], params[:password])
@@ -139,6 +139,31 @@ class ApiController < ApplicationController
     #  logger.debug "Exception in ApiController order_update : #{e.message} "
     #  res = { :error => e.message, :result => nil }
     #  render :json => res
+  end
+
+  def push_in_queue
+    @user = User.authenticate(params[:login], params[:password])
+    if @user
+      if request.env["HTTP_X_FORWARDED_FOR"].nil? == true
+        @user.update_attribute(:ip, request.remote_ip)
+      else
+        @user.update_attribute(:ip, request.env["HTTP_X_FORWARDED_FOR"])
+      end
+      pq = PointQueue.new
+      pq.point_id = params[:point_id]
+      pq.car = @user.car
+      pq.state = params[:state]
+      if pq.save
+        res = { :error => "none", :result => nil }
+        render :json => res
+      else
+        res = { :error => "Stay in queue error", :result => nil }
+        render :json => res
+      end
+    else
+      res = { :error => "Login or password incorrect", :result => nil }
+      render :json => res
+    end
   end
 
 end
