@@ -1,5 +1,6 @@
 Bee2::Application.routes.draw do
 
+  post "api/:login/:password/reforders" => 'api#refresh_orders', :as => 'api_refresh_orders'
   post "api/:login/:password/qpush" => 'api#push_in_queue', :as => 'api_qpush'
   
   post "api/:login/:password/order" => 'api#order_update', :as => 'api_order_update'

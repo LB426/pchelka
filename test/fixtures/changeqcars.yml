@@ -1,0 +1,11 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  car: 1
+  row: 1
+  state: 1
+
+two:
+  car: 1
+  row: 1
+  state: 1

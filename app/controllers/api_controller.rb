@@ -1,5 +1,5 @@
 class ApiController < ApplicationController
-  protect_from_forgery :except => [ :order_update, :push_in_queue ]
+  protect_from_forgery :except => [ :order_update, :push_in_queue, :refrsh_orders ]
   
   def queue
   	@user = User.authenticate(params[:login], params[:password])
@@ -149,11 +149,12 @@ class ApiController < ApplicationController
       else
         @user.update_attribute(:ip, request.env["HTTP_X_FORWARDED_FOR"])
       end
-      pq = PointQueue.new
-      pq.point_id = params[:point_id]
+      pq = Changeqcar.new
+      pq.row = params[:row]
       pq.car = @user.car
       pq.state = params[:state]
       if pq.save
+        pq.destroy
         res = { :error => "none", :result => nil }
         render :json => res
       else
@@ -164,6 +165,10 @@ class ApiController < ApplicationController
       res = { :error => "Login or password incorrect", :result => nil }
       render :json => res
     end
+  end
+
+  def refresh_orders
+
   end
 
 end
