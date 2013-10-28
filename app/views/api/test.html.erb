@@ -17,3 +17,5 @@ Order update<br>
 	<%= text_field_tag 'state', '1' %><br>
 	<%= submit_tag 'Save' %>
 <% end %>
+<hr>
+<%= link_to "Послать сообщение обновления таблиц", api_refresh_orders_path(current_user.login, current_user.password) %>

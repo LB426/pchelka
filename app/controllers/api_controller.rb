@@ -1,5 +1,5 @@
 class ApiController < ApplicationController
-  protect_from_forgery :except => [ :order_update, :push_in_queue, :refrsh_orders ]
+  protect_from_forgery :except => [ :order_update, :push_in_queue ]
   
   def queue
   	@user = User.authenticate(params[:login], params[:password])
@@ -168,7 +168,21 @@ class ApiController < ApplicationController
   end
 
   def refresh_orders
-
+    res = { :error => "none", :result => nil }
+    dispatchers = User.where(group: 'dispatcher')
+    dispatchers.each do |disp|
+      logger.debug "disp.ip = #{disp.ip}"
+      begin
+        $s = TCPSocket.open(disp.ip, 6003)
+        $s.puts "REF"
+      rescue Exception => e
+        logger.debug "Exception in ApiController refresh_orders : #{e.message} "
+        res = { :error => e.message, :result => nil }
+      ensure
+        $s.close unless $s.nil?
+      end
+    end
+    render :json => res
   end
 
 end
