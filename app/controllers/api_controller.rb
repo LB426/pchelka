@@ -142,6 +142,7 @@ class ApiController < ApplicationController
   end
 
   def push_in_queue
+    res = { :error => "none", :result => nil }
     @user = User.authenticate(params[:login], params[:password])
     if @user
       if request.env["HTTP_X_FORWARDED_FOR"].nil? == true
@@ -155,20 +156,20 @@ class ApiController < ApplicationController
       pq.state = params[:state]
       if pq.save
         pq.destroy
-        send_ref
-        res = { :error => "none", :result => nil }
-        render :json => res
+        if send_ref != true
+          res = { :error => "message REF send ERROR", :result => nil }
+        end
       else
         res = { :error => "Stay in queue error", :result => nil }
-        render :json => res
       end
     else
       res = { :error => "Login or password incorrect", :result => nil }
-      render :json => res
     end
+    render :json => res
   end
 
   def refresh_orders
+    res = { :error => "none", :result => nil }
     @user = User.authenticate(params[:login], params[:password])
     if @user
       if request.env["HTTP_X_FORWARDED_FOR"].nil? == true
@@ -176,16 +177,13 @@ class ApiController < ApplicationController
       else
         @user.update_attribute(:ip, request.env["HTTP_X_FORWARDED_FOR"])
       end
-      if send_ref
-        res = { :error => "none", :result => nil }
-      else
+      if send_ref != true
         res = { :error => "message REF send ERROR", :result => nil }
       end
-      render :json => res
     else
       res = { :error => "Login or password incorrect", :result => nil }
-      render :json => res
     end
+    render :json => res
   end
 
 private
