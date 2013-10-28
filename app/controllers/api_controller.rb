@@ -168,21 +168,42 @@ class ApiController < ApplicationController
   end
 
   def refresh_orders
-    res = { :error => "none", :result => nil }
+    @user = User.authenticate(params[:login], params[:password])
+    if @user
+      if request.env["HTTP_X_FORWARDED_FOR"].nil? == true
+        @user.update_attribute(:ip, request.remote_ip)
+      else
+        @user.update_attribute(:ip, request.env["HTTP_X_FORWARDED_FOR"])
+      end
+      if send_ref
+        res = { :error => "none", :result => nil }
+      else
+        res = { :error => "message REF send ERROR", :result => nil }
+      end
+      render :json => res
+    else
+      res = { :error => "Login or password incorrect", :result => nil }
+      render :json => res
+    end
+  end
+
+private
+  def send_ref
+    res = true
     dispatchers = User.where(group: 'dispatcher')
     dispatchers.each do |disp|
       logger.debug "disp.ip = #{disp.ip}"
       begin
-        $s = TCPSocket.open(disp.ip, 6003)
+        $s = TCPSocket.open(disp.ip, 6004)
         $s.puts "REF"
       rescue Exception => e
         logger.debug "Exception in ApiController refresh_orders : #{e.message} "
-        res = { :error => e.message, :result => nil }
+        res = false
       ensure
         $s.close unless $s.nil?
       end
     end
-    render :json => res
+    return res
   end
 
 end
