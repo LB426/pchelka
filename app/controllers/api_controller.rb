@@ -155,6 +155,7 @@ class ApiController < ApplicationController
       pq.state = params[:state]
       if pq.save
         pq.destroy
+        send_ref
         res = { :error => "none", :result => nil }
         render :json => res
       else
