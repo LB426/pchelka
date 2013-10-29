@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20131022162025) do
+ActiveRecord::Schema.define(version: 20131028101716) do
 
   create_table "abonenty", id: false, force: true do |t|
     t.integer "num"
@@ -136,6 +136,14 @@ ActiveRecord::Schema.define(version: 20131022162025) do
     t.integer "summa"
     t.integer "week"
     t.string  "telef",      limit: 10
+  end
+
+  create_table "changeqcars", force: true do |t|
+    t.integer  "car"
+    t.integer  "row"
+    t.integer  "state"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "cqueue", id: false, force: true do |t|
