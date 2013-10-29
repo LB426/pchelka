@@ -156,6 +156,8 @@ class ApiController < ApplicationController
       pq.state = params[:state]
       if pq.save
         pq.destroy
+        order = Zakazi.where("car = #{@user.car}")
+        order.destroy
         if send_ref != true
           res = { :error => "message REF send ERROR", :result => nil }
         end
