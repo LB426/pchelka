@@ -194,14 +194,19 @@ private
     dispatchers = User.where(group: 'dispatcher')
     dispatchers.each do |disp|
       logger.debug "disp.ip = #{disp.ip}"
-      begin
-        $s = TCPSocket.open(disp.ip, 6004)
-        $s.puts "REF"
-      rescue Exception => e
-        logger.debug "Exception in ApiController refresh_orders : #{e.message} "
+      unless disp.ip.nil? || disp.ip.empty?
+        begin
+          $s = TCPSocket.open(disp.ip, 6004)
+          $s.puts "REF"
+        rescue Exception => e
+          logger.debug "Exception in ApiController refresh_orders : #{e.message} "
+          res = false
+        ensure
+          $s.close unless $s.nil?
+        end
+      else
+        logger.debug "disp.ip is empty or nil"
         res = false
-      ensure
-        $s.close unless $s.nil?
       end
     end
     return res
