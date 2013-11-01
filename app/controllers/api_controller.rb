@@ -156,7 +156,9 @@ class ApiController < ApplicationController
       pq.state = params[:state]
       if pq.save
         pq.destroy
-				Zakazi.where(:car => @user.car).delete_all
+        unless params['delzak'].nil? || params['delzak'].empty?
+  				Zakazi.where(:car => @user.car).delete_all if params['delzak'] == '1'
+        end
         if send_ref != true
           res = { :error => "message REF send ERROR", :result => nil }
         end
@@ -193,14 +195,19 @@ private
     dispatchers = User.where(group: 'dispatcher')
     dispatchers.each do |disp|
       logger.debug "disp.ip = #{disp.ip}"
-      begin
-        $s = TCPSocket.open(disp.ip, 6004)
-        $s.puts "REF"
-      rescue Exception => e
-        logger.debug "Exception in ApiController refresh_orders : #{e.message} "
+      unless disp.ip.nil? || disp.ip.empty?
+        begin
+          $s = TCPSocket.open(disp.ip, 6004)
+          $s.puts "REF"
+        rescue Exception => e
+          logger.debug "Exception in ApiController refresh_orders : #{e.message} "
+          res = false
+        ensure
+          $s.close unless $s.nil?
+        end
+      else
+        logger.debug "disp.ip is empty or nil"
         res = false
-      ensure
-        $s.close unless $s.nil?
       end
     end
     return res
