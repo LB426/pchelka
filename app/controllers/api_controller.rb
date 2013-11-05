@@ -131,6 +131,9 @@ class ApiController < ApplicationController
         res = { :error => "params uvedomlen is empty", :result => nil }
         render :json => res
       end
+      if send_ref != true
+        res = { :error => "message REF send ERROR", :result => nil }
+      end
     else
       res = { :error => "Login or password incorrect", :result => nil }
       render :json => res
@@ -150,21 +153,31 @@ class ApiController < ApplicationController
       else
         @user.update_attribute(:ip, request.env["HTTP_X_FORWARDED_FOR"])
       end
-      pq = Changeqcar.new
-      pq.row = params[:row]
-      pq.car = @user.car
-      pq.state = params[:state]
-      if pq.save
-        pq.destroy
-        unless params['delzak'].nil? || params['delzak'].empty?
-  				Zakazi.where(:car => @user.car).delete_all if params['delzak'] == '1'
-        end
-        if send_ref != true
-          res = { :error => "message REF send ERROR", :result => nil }
+
+      if params[:row] == '-1'
+        #изменить состояние
+        unless params[:state].nil? || params[:state].empty?
+          Cqueue.where("car = #{@user.car}").limit(1).update_all(state: params[:state])
+          logger.debug "params[:row]=#{params[:row]}"
         end
       else
-        res = { :error => "Stay in queue error", :result => nil }
+        pq = Changeqcar.new
+        pq.row = params[:row]
+        pq.car = @user.car
+        pq.state = params[:state]
+        if pq.save
+          pq.destroy
+          unless params['delzak'].nil? || params['delzak'].empty?
+    				Zakazi.where(:car => @user.car).delete_all if params['delzak'] == '1'
+          end
+        else
+          res = { :error => "Stay in queue error", :result => nil }
+        end
       end
+      if send_ref != true
+        res = { :error => "message REF send ERROR", :result => nil }
+      end
+
     else
       res = { :error => "Login or password incorrect", :result => nil }
     end
