@@ -9,6 +9,7 @@ class ApiController < ApplicationController
       else
         @user.update_attribute(:ip, request.env["HTTP_X_FORWARDED_FOR"])
       end
+
   	  @points =	{
   								1 => { 'name' => 'на заказе', 'queue' => [] },
   								2 => { 'name' => 'Черёмушки', 'queue' => [] },
@@ -21,47 +22,64 @@ class ApiController < ApplicationController
   								9 => { 'name' => 'Та сторона', 'queue' => [] },
   								10 => { 'name' => 'Парковый', 'queue' => [] }
   							}
-      table = Cqueue.where("car > 0")
-      rows = []
-  		table.each	do |r|
-  			if r != nil
-  			rows << r['row']
-  			end
-  		end
-  		rows.uniq!
-  		rows.each do |q|
-  			queue_places = []
-  			table.each	do |r|
-  				if r != nil
-  				if r['row'] == q
-  					queue_places << r['col']
-  				end
-  				end
-  			end
-  			queue_places.sort!
-  			queue_places.each do |p|
-  				table.each do |r|
-  					if r != nil
-  					  if r['row'] == q && r['col'] == p
-    						if @points[q] != nil
-    							@points[q]['queue'] << { 'car_num' => r['car'], 'car_state' => r['state'] }
-    						end
-    					end
-  					end
-  				end
-  			end
-  		end
+      #table = Cqueue.where("car > 0")
+      #rows = []
+  		#table.each	do |r|
+  		#	if r != nil
+  		#	rows << r['row']
+  		#	end
+  		#end
+  		#rows.uniq!
+  		#rows.each do |q|
+  		#	queue_places = []
+  		#	table.each	do |r|
+  		#		if r != nil
+  		#		if r['row'] == q
+  		#			queue_places << r['col']
+  		#		end
+  		#		end
+  		#	end
+  		#	queue_places.sort!
+  		#	queue_places.each do |p|
+  		#		table.each do |r|
+  		#			if r != nil
+  		#			  if r['row'] == q && r['col'] == p
+    	#					if @points[q] != nil
+    	#						@points[q]['queue'] << { 'car_num' => r['car'], 'car_state' => r['state'] }
+    	#					end
+    	#				end
+  		#			end
+  		#		end
+  		#	end
+  		#end
+      #@num_queues = @points.size
+
       @num_queues = @points.size
+      table = PointQueue.where("car > 0")
+      @points.each_key do |k|
+        #logger.debug k
+        pqueue = PointQueue.where("point_id = ?",k).order("updated_at ASC")
+        if pqueue.size != 0
+          #logger.debug pqueue.size
+          pqueue.each do |r|
+            @points[k]['queue'] << { 'car_num' => r['car'], 'car_state' => r['state'] }
+          end
+        else
+        end
+      end
+      #logger.debug @points
       @max_col = 0
       for i in 2..@num_queues do
         if @points[i]['queue'].size > @max_col
           @max_col = @points[i]['queue'].size
         end
       end
+
     else
       res = { :error => "Login or password incorrect", :result => nil }
       render :json => res
     end
+
     rescue Exception => e
       logger.debug "Exception in ApiController queue: #{e.message} "
       res = { :error => e.message, :result => nil }
