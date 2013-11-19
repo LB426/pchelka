@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20131115111653) do
+ActiveRecord::Schema.define(version: 20131113123919) do
 
   create_table "abonenty", id: false, force: true do |t|
     t.integer "num"
