@@ -23,17 +23,51 @@
 			<% unless @points[i]['queue'].empty? %>
 				<% @points[i]['queue'].each do |q| %>
 					<% if q['car_num'] == @user.car %>
-						<td bgcolor="lightgreen" align="center">
+						<td bgcolor="Magenta" align="center">
 							<font color="black" face="Geneva, Arial" size="3">
-							<%= q['car_num'] %>
+								<strong><%= q['car_num'] %></strong>
 							</font>
 						</td>
 					<% else %>
-						<td>
-							<font color="black" face="Geneva, Arial" size="3">
+						<% if q['car_state'] == 0 %>
+							<td bgcolor="White" align="center">
 								<%= q['car_num'] %>
-							</font>
-						</td>
+							</td>
+						<% end %>
+						<% if q['car_state'] == 1 %>
+							<td bgcolor="Green" align="center">
+								<font color="white" face="Geneva, Arial" size="3">
+									<%= q['car_num'] %>
+								</font>
+							</td>
+						<% end %>
+						<% if q['car_state'] == 2 %>
+							<td bgcolor="Blue" align="center">
+								<font color="white" face="Geneva, Arial" size="3">
+									<%= q['car_num'] %>
+								</font>
+							</td>
+						<% end %>
+						<% if q['car_state'] == 3 %>
+							<td bgcolor="Yellow" align="center">
+								<%= q['car_num'] %>
+							</td>
+						<% end %>
+						<% if q['car_state'] == 4 %>
+							<td bgcolor="Lime" align="center">
+								<%= q['car_num'] %>
+							</td>
+						<% end %>
+						<% if q['car_state'] == 5 %>
+							<td bgcolor="Cyan" align="center">
+								<%= q['car_num'] %>
+							</td>
+						<% end %>
+						<% if q['car_state'] == 6 %>
+							<td bgcolor="Red" align="center">
+								<%= q['car_num'] %>
+							</td>
+						<% end %>
 					<% end %>
 				<% end %>
 				<% cols = @max_col - @points[i]['queue'].size %>
