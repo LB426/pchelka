@@ -101,7 +101,8 @@ class ApiController < ApplicationController
       order = Zakazi.where("car = #{@user.car}")
       if order.size == 1
         res = { :error => "none",
-                :result => {  'adres' => order[0]['adres'],
+                :result => {  
+                              'adres' => order[0]['adres'],
                               'zakaz' => order[0]['zakaz'],
                               'telefon' => order[0]['telefon'],
                               'kode' => order[0]['kode'],
@@ -135,6 +136,7 @@ class ApiController < ApplicationController
       else
         @user.update_attribute(:ip, request.env["HTTP_X_FORWARDED_FOR"])
       end
+
       unless params[:uvedomlen].empty?
         order = Zakazi.where("car = #{@user.car}")
         if order.size == 1
@@ -166,6 +168,7 @@ class ApiController < ApplicationController
     res = { :error => "none", :result => nil }
     @user = User.authenticate(params[:login], params[:password])
     if @user
+
       if request.env["HTTP_X_FORWARDED_FOR"].nil? == true
         @user.update_attribute(:ip, request.remote_ip)
       else
