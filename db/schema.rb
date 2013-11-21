@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20131121174904) do
+ActiveRecord::Schema.define(version: 20131121181024) do
 
   create_table "abonenty", id: false, force: true do |t|
     t.integer "num"
@@ -169,6 +169,9 @@ ActiveRecord::Schema.define(version: 20131121174904) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  add_index "logs", ["created_at"], name: "index_logs_on_created_at", using: :btree
+  add_index "logs", ["user"], name: "index_logs_on_user", using: :btree
 
   create_table "point_queues", force: true do |t|
     t.integer  "point_id"
