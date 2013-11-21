@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20131119123807) do
+ActiveRecord::Schema.define(version: 20131121174904) do
 
   create_table "abonenty", id: false, force: true do |t|
     t.integer "num"
@@ -160,6 +160,14 @@ ActiveRecord::Schema.define(version: 20131119123807) do
     t.integer "day"
     t.integer "week"
     t.integer "working"
+  end
+
+  create_table "logs", force: true do |t|
+    t.string   "user"
+    t.string   "ip"
+    t.text     "parameters"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "point_queues", force: true do |t|
