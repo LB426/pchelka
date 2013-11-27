@@ -17,7 +17,7 @@ Order update<br>
 Стать в очередь<br>
 <%= form_tag(api_qpush_path(current_user.login,current_user.password), method: :post, authenticity_token: false) do -%>
 	Идентификатор точки<br>
-	<%= text_field_tag 'row', '2' %><br>
+	<%= text_field_tag 'point_id', '2' %><br>
 	Код состояния<br>
 	<%= text_field_tag 'state', '1' %><br>
 	Удалить заказ<br>
