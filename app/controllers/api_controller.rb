@@ -1,6 +1,12 @@
 class ApiController < ApplicationController
-  protect_from_forgery :except => [ :order_update, :push_in_queue, :order_destroy, :state_update ]
-  before_filter :write_to_log
+  protect_from_forgery :except => [ :order_update, 
+                                    :push_in_queue, 
+                                    :order_destroy, 
+                                    :state_update, 
+                                    :dispreg,
+                                    :caronorder ]
+  #если раскомментировать то все параметры запросов будут писаться в таблицу log
+  #before_filter :write_to_log
   
   def queue
   	@user = User.authenticate(params[:login], params[:password])
@@ -194,32 +200,6 @@ class ApiController < ApplicationController
         @user.update_attribute(:ip, request.env["HTTP_X_FORWARDED_FOR"])
       end
 
-=begin
-      if params[:row] == '-1'
-        #изменить состояние
-        unless params[:state].nil? || params[:state].empty?
-          Cqueue.where("car = #{@user.car}").limit(1).update_all(state: params[:state])
-          logger.debug "params[:row]=#{params[:row]}"
-        end
-      else
-        pq = Changeqcar.new
-        pq.row = params[:row]
-        pq.car = @user.car
-        pq.state = params[:state]
-        if pq.save
-          pq.destroy
-          unless params['delzak'].nil? || params['delzak'].empty?
-    				Zakazi.where(:car => @user.car).delete_all if params['delzak'] == '1'
-          end
-        else
-          res = { :error => "Stay in queue error", :result => nil }
-        end
-      end
-      if send_ref != true
-        res = { :error => "message REF send ERROR", :result => nil }
-      end
-=end
-
       p = PointQueue.where(:car => @user.car)
       if p.size == 1
         p[0].destroy
@@ -282,6 +262,42 @@ class ApiController < ApplicationController
         end
       else
         logger.debug "state=nil or car=nil"
+      end
+    else
+      res = { :error => "Login or password incorrect", :result => nil }
+    end
+    render :json => res
+  end
+
+  def dispreg
+    res = { :error => "none", :result => nil }
+    @user = User.authenticate(params[:login], params[:password])
+    if @user
+      if @user.group =~ /dispatcher/
+        if request.env["HTTP_X_FORWARDED_FOR"].nil? == true
+          @user.update_attribute(:ip, request.remote_ip)
+        else
+          @user.update_attribute(:ip, request.env["HTTP_X_FORWARDED_FOR"])
+        end
+        res = { :error => "none", :result => 'dispatcher registration OK' }
+      else
+        res = { :error => "dispatcher registration ERROR. group=#{@user.group}", :result => nil }
+      end
+    else
+      res = { :error => "dispatcher registration ERROR. Login or password incorrect", :result => nil }
+    end
+    render :json => res
+  end
+
+  def caronorder
+    res = { :error => "none", :result => nil }
+    @user = User.authenticate(params[:login], params[:password])
+    if @user
+      unless params[:order_id].nil? && params[:car].nil?
+        logger.debug "order_id=#{params[:order_id]} , car=#{params[:car]}"
+
+      else
+        res = { :error => "order_id or car is nil", :result => nil }
       end
     else
       res = { :error => "Login or password incorrect", :result => nil }

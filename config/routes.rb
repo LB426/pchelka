@@ -1,5 +1,8 @@
 Bee2::Application.routes.draw do
 
+  post "api/:login/:password/caronorder" => 'api#caronorder', :as => 'api_caronorder'
+  post "api/:login/:password/dispreg" => 'api#dispreg', :as => 'api_dispreg'
+
   post "api/:login/:password/stateupd" => 'api#state_update', :as => 'api_state_update'
 
   get "api/:login/:password/reforders" => 'api#refresh_orders', :as => 'api_refresh_orders'
