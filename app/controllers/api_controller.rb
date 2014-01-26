@@ -4,7 +4,8 @@ class ApiController < ApplicationController
                                     :order_destroy, 
                                     :state_update, 
                                     :dispreg,
-                                    :caronorder ]
+                                    :caronorder,
+                                    :zvonkiupd ]
   #если раскомментировать то все параметры запросов будут писаться в таблицу log
   #before_filter :write_to_log
   
@@ -304,6 +305,59 @@ class ApiController < ApplicationController
     end
     render :json => res
   end
+
+  def zvonkiupd
+    res = { :error => "none", :result => nil }
+    @user = User.authenticate(params[:login], params[:password])
+    if @user
+      unless params[:car_id].nil?
+        logger.debug "car=#{params[:car_id]}"
+        car_id = params[:car_id]
+        order = Zakazi.where(:car => car_id)
+        if order.size == 1
+          if order[0].zakaz < 0
+            logger.debug "order[0]=#{order[0].zakaz}"
+            #добавить в звонки строчку
+            z = Zvonki.new
+            z.zakaz = order[0].zakaz
+            z.telefon = order[0].telefon
+            z.kode = order[0].kode
+            z.dat = order[0].dat
+            z.tim = order[0].tim
+            z.adres = order[0].adres
+            z.car = car_id
+            z.save
+          end
+          if order[0].zakaz > 0
+            logger.debug "order[0]=#{order[0].zakaz}"
+            # обновить в звонки строку по заказу
+            z = Zvonki.where(:num => order[0].zakaz)
+            if z.size == 1
+              Zvonki.where(:num => order[0].zakaz).limit(1).update_all(
+                zakaz: order[0].zakaz,
+                telefon: order[0].telefon, 
+                kode: order[0].kode, 
+                dat: order[0].dat, 
+                tim: order[0].tim, 
+                adres: order[0].adres)
+            else
+              res = { :error => "amount zvonkov in table zvonki for order #{order[0].zakaz} ne ravno 1", :result => nil }
+            end
+          end
+        else
+          if order.size > 1 || order.size == 0
+            res = { :error => "amount orders in table zakazi #{order.size}", :result => nil }
+          end
+        end
+      else
+        res = { :error => "order_id or car is nil", :result => nil }
+      end
+    else
+      res = { :error => "Login or password incorrect", :result => nil }
+    end
+    render :json => res
+  end
+
 
 private
   def send_ref
