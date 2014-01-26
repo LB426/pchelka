@@ -155,6 +155,13 @@ ActiveRecord::Schema.define(version: 20131121181024) do
     t.integer "col"
   end
 
+  create_table "cqueue2", force: true do |t|
+    t.integer   "car",   default: 0, null: false
+    t.integer   "row",   default: 0, null: false
+    t.integer   "state", default: 0, null: false
+    t.timestamp "dt",                null: false
+  end
+
   create_table "disp", id: false, force: true do |t|
     t.integer "num"
     t.integer "day"
