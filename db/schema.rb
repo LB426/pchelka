@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20131121181024) do
+ActiveRecord::Schema.define(version: 20131123122312) do
 
   create_table "abonenty", id: false, force: true do |t|
     t.integer "num"
@@ -172,7 +172,7 @@ ActiveRecord::Schema.define(version: 20131121181024) do
   create_table "logs", force: true do |t|
     t.string   "user"
     t.string   "ip"
-    t.text     "parameters"
+    t.text     "parameters", limit: 16777215
     t.datetime "created_at"
     t.datetime "updated_at"
   end

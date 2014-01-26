@@ -17,7 +17,7 @@ Order update<br>
 Стать в очередь<br>
 <%= form_tag(api_qpush_path(current_user.login,current_user.password), method: :post, authenticity_token: false) do -%>
 	Идентификатор точки<br>
-	<%= text_field_tag 'row', '2' %><br>
+	<%= text_field_tag 'point_id', '2' %><br>
 	Код состояния<br>
 	<%= text_field_tag 'state', '1' %><br>
 	Удалить заказ<br>
@@ -26,3 +26,21 @@ Order update<br>
 <% end %>
 <hr>
 <%= link_to "Послать сообщение обновления таблиц", api_refresh_orders_path(current_user.login, current_user.password) %>
+<hr>
+<%= form_tag(api_dispreg_path(current_user.login,current_user.password), method: :post, authenticity_token: false) do -%>
+	<%= submit_tag 'Зарегистрировать диспетчера в очереди' %>
+<% end %>
+<hr>
+<%= form_tag(api_caronorder_path(current_user.login,current_user.password), method: :post, authenticity_token: false) do -%>
+	Машина<br>
+	<%= text_field_tag 'car', '2' %><br>
+	Заказ<br>
+	<%= text_field_tag 'order_id', '1' %><br>
+	<%= submit_tag 'Поставить машину на заказ' %>
+<% end %>
+<hr>
+<%= form_tag(api_zvonkiupd_path(current_user.login,current_user.password), method: :post, authenticity_token: false) do -%>
+	Машина<br>
+	<%= text_field_tag 'car_id', '2' %><br>
+	<%= submit_tag 'Обновить звонки' %>
+<% end %>
