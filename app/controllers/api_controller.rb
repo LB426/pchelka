@@ -268,7 +268,7 @@ class ApiController < ApplicationController
       end
       if @user.group == 'driver'
         unless params[:state].nil? 
-          p = PointQueue.where("id = ?", @user.id)
+          p = PointQueue.where("car = ?", @user.car)
           if p.size == 1
             p[0].update_attribute(:state, params[:state])
           else
