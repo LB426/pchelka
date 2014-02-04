@@ -1,0 +1,35 @@
+# Turn off start message:
+startup_message off
+
+# Set messages timeout to one second:
+msgwait 1
+
+# keep scrollback n lines
+defscrollback 50000
+
+hardstatus             alwayslastline
+
+termcapinfo xterm*|rxvt*|kterm*|Eterm* 'hs:ts=\E]0;:fs=\007:ds=\E]0;\007'
+termcapinfo xterm ti@:te@7 
+
+# эта строка как раз рисует табы внизу, в строке состояния, подсвечивает текущий и т.п.
+hardstatus string '%{= kG}[ %{G}%H %{g}][%= %{= kw}%?%-Lw%?%{r}(%{y}%n*%f%t%?(%u)%?%{r})%{w}%?%+Lw%?%?%= %{g}][%{B} %d/%m %{W}%c %{g}]'
+
+nethack on
+vbell off
+
+#  Здесь комбинациям Shift+Arrow Left/Right назначается переключение между табами
+#  bindkey ^[[1;2C next
+#  bindkey ^[[1;2D prev
+
+# ну а здесь я создаю 8 скринов AUTO1 – AUTO8
+
+screen -t AUTO1 /home/bliz/proj/pchelka/dev_env_pchelka
+screen -t AUTO2 /home/bliz/proj/pchelka/dev_env_pchelka
+screen -t AUTO3 /home/bliz/proj/pchelka/dev_env_pchelka
+screen -t AUTO4 /home/bliz/proj/pchelka/dev_env_pchelka
+screen -t AUTO5 /home/bliz/proj/pchelka/dev_env_pchelka
+screen -t AUTO6 /home/bliz/proj/pchelka/dev_env_pchelka
+screen -t AUTO7 /home/bliz/proj/pchelka/dev_env_pchelka
+screen -t AUTO8 /home/bliz/proj/pchelka/dev_env_pchelka
+

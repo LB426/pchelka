@@ -44,3 +44,9 @@ Order update<br>
 	<%= text_field_tag 'car_id', '2' %><br>
 	<%= submit_tag 'Обновить звонки' %>
 <% end %>
+<hr>
+<%= form_tag(api_state_update_path(current_user.login,current_user.password), method: :post, authenticity_token: false) do -%>
+	Код состояния<br>
+	<%= text_field_tag 'state', '2' %><br>
+	<%= submit_tag 'Обновить состояние' %>
+<% end %>
