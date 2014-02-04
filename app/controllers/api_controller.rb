@@ -254,15 +254,30 @@ class ApiController < ApplicationController
     res = { :error => "none", :result => nil }
     @user = User.authenticate(params[:login], params[:password])
     if @user
-      unless params[:state].nil? && params[:car].nil?
-        p = PointQueue.where("car = ?", params[:car])
-        if p.size == 1
-          p[0].update_attribute(:state, params[:state])
+      if @user.group == 'dispatcher'
+        unless params[:state].nil? && params[:car].nil?
+          p = PointQueue.where("car = ?", params[:car])
+          if p.size == 1
+            p[0].update_attribute(:state, params[:state])
+          else
+            res = { :error => "update state in point_queue unsuccess, amount car=#{@user.car} is #{p.size}, user = #{@user.login}, #{@user.group}", :result => nil }
+          end
         else
-          res = { :error => "update state in point_queue unsuccess, amount car=#{@user.car} is #{p.size}", :result => nil }
+          logger.debug "state=nil or car=nil"
         end
-      else
-        logger.debug "state=nil or car=nil"
+      end
+      if @user.group == 'driver'
+        unless params[:state].nil? 
+          p = PointQueue.where("id = ?", @user.id)
+          if p.size == 1
+            p[0].update_attribute(:state, params[:state])
+          else
+            res = { :error => "update state in point_queue unsuccess, amount car=#{@user.car} is #{p.size}, user = #{@user.login}, #{@user.group}", :result => nil }
+          end
+        else
+          logger.debug "state=nil"
+          res = { :error => "state is nil, driver = @user.login", :result => nil }
+        end
       end
     else
       res = { :error => "Login or password incorrect", :result => nil }
