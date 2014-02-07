@@ -271,6 +271,9 @@ class ApiController < ApplicationController
           p = PointQueue.where("car = ?", @user.car)
           if p.size == 1
             p[0].update_attribute(:state, params[:state])
+            if send_ref != true
+              res = { :error => "message REF send ERROR", :result => nil }
+            end
           else
             res = { :error => "update state in point_queue unsuccess, amount car=#{@user.car} is #{p.size}, user = #{@user.login}, #{@user.group}", :result => nil }
           end

@@ -35,3 +35,9 @@ class FooController < ApplicationController
 git rm --cached config/database.yml
 
 ssh -N -R 23307:127.0.0.1:3306 bliz@tih.kuban.ru
+
+unicorn_rails -c config/unicorn.rb -E development &       запускаем программу
+
+Если приходит HTTP запрос с URL типа  /api/:login/:password/zvonkiupd
+они попадают в маршрут
+смотреть какие маршруты есть командой rake routes
