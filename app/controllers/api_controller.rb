@@ -142,7 +142,6 @@ class ApiController < ApplicationController
     res = { :error => "none", :result => nil }
     @user = User.authenticate(params[:login], params[:password])
     if @user
-
       if params[:order_id].nil?
         order = Zakazi.where(:car => @user.car)
         if order.size == 1
@@ -184,6 +183,10 @@ class ApiController < ApplicationController
       else
         Zakazi.where(:zakaz => params[:order_id]).delete_all
       end
+      # шлем сообщение обновления таблиц
+      if send_ref != true
+        res = { :error => "message REF send ERROR", :result => nil }
+      end
     else
       res = { :error => "Login or password incorrect", :result => nil }
     end
@@ -194,13 +197,11 @@ class ApiController < ApplicationController
     res = { :error => "none", :result => nil }
     @user = User.authenticate(params[:login], params[:password])
     if @user
-
       if request.env["HTTP_X_FORWARDED_FOR"].nil? == true
         @user.update_attribute(:ip, request.remote_ip)
       else
         @user.update_attribute(:ip, request.env["HTTP_X_FORWARDED_FOR"])
       end
-
       p = PointQueue.where(:car => @user.car)
       if p.size == 1
         p[0].destroy
@@ -218,14 +219,16 @@ class ApiController < ApplicationController
         p2.car = @user.car
         p2.state = params[:state]
         if p2.save
-
+          # шлем сообщение обновления таблиц
+          if send_ref != true
+            res = { :error => "message REF send ERROR", :result => nil }
+          end
         else
           res = { :error => "write in DB error", :result => nil }
         end
       else
         res = { :error => "amount car on point > 1", :result => nil }
       end
-
     else
       res = { :error => "Login or password incorrect", :result => nil }
     end
@@ -271,9 +274,6 @@ class ApiController < ApplicationController
           p = PointQueue.where("car = ?", @user.car)
           if p.size == 1
             p[0].update_attribute(:state, params[:state])
-            if send_ref != true
-              res = { :error => "message REF send ERROR", :result => nil }
-            end
           else
             res = { :error => "update state in point_queue unsuccess, amount car=#{@user.car} is #{p.size}, user = #{@user.login}, #{@user.group}", :result => nil }
           end
@@ -281,6 +281,10 @@ class ApiController < ApplicationController
           logger.debug "state=nil"
           res = { :error => "state is nil, driver = @user.login", :result => nil }
         end
+      end
+      # шлем сообщение обновления таблиц
+      if send_ref != true
+        res = { :error => "message REF send ERROR", :result => nil }
       end
     else
       res = { :error => "Login or password incorrect", :result => nil }
