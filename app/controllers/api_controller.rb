@@ -373,7 +373,6 @@ class ApiController < ApplicationController
     render :json => res
   end
 
-
 private
   def send_ref
     res = true
