@@ -1,6 +1,6 @@
 class ApiController < ApplicationController
   protect_from_forgery :except => [ :order_update, :push_in_queue ]
-  before_filter :write_to_log
+  #before_filter :write_to_log
   
   def queue
   	@user = User.authenticate(params[:login], params[:password])
