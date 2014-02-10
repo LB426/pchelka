@@ -1,3 +1,3 @@
 class Log < ActiveRecord::Base
-  serialize :parameters
+  serialize :parameters, Hash
 end
