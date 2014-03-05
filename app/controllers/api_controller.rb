@@ -227,7 +227,8 @@ class ApiController < ApplicationController
           res = { :error => "write in DB error", :result => nil }
         end
       else
-        res = { :error => "amount car on point > 1", :result => nil }
+				logger.debug "ERROR-> amount car on point: #{p.size} for user: #{@user.login} and car: #{@user.car}"
+        res = { :error => "ERROR-> amount car on point != 1", :result => nil }
       end
     else
       res = { :error => "Login or password incorrect", :result => nil }
