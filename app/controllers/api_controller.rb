@@ -209,12 +209,12 @@ class ApiController < ApplicationController
         p2.point_id = params[:point_id]
         ########################################################################
         # для старой версии андроидного приложения
-        unless params[:row].nil? 
-          p2.point_id = params[:row]
-        end
-        unless params['delzak'].nil?
-          Zakazi.where(:car => @user.car).delete_all if params['delzak'] == '1'
-        end
+        # unless params[:row].nil? 
+        #   p2.point_id = params[:row]
+        # end
+        # unless params['delzak'].nil?
+        #   Zakazi.where(:car => @user.car).delete_all if params['delzak'] == '1'
+        # end
         ########################################################################
         p2.car = @user.car
         p2.state = params[:state]
