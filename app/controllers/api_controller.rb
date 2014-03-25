@@ -381,6 +381,10 @@ class ApiController < ApplicationController
     render :json => res
   end
 
+  def karta
+    
+  end
+
 private
   def send_ref
     res = true
