@@ -16,20 +16,20 @@ class ApiController < ApplicationController
         @user.update_attribute(:ip, request.remote_ip)
       else
         @user.update_attribute(:ip, request.env["HTTP_X_FORWARDED_FOR"])
-      end
-
-  	  @points =	{
-  								1 => { 'name' => 'на заказе', 'queue' => [] },
-  								2 => { 'name' => 'Черёмушки', 'queue' => [] },
-  								3 => { 'name' => 'Элеватор', 'queue' => [] },
-  								4 => { 'name' => 'Глобус', 'queue' => [] },
-  								5 => { 'name' => 'Рынок', 'queue' => [] },
-  								6 => { 'name' => 'Магнолия', 'queue' => [] },
-  								7 => { 'name' => 'Пентагон', 'queue' => [] },
-  								8 => { 'name' => 'Военный', 'queue' => [] },
-  								9 => { 'name' => 'Та сторона', 'queue' => [] },
-  								10 => { 'name' => 'Парковый', 'queue' => [] }
-  							}
+      end     
+       
+      @points ={
+          1 => { 'name' => 'на заказе', 'queue' => [] },
+          2 => { 'name' => 'Черёмушки', 'queue' => [] },
+          3 => { 'name' => 'Элеватор', 'queue' => [] },
+          4 => { 'name' => 'Глобус', 'queue' => [] },
+          5 => { 'name' => 'Рынок', 'queue' => [] },
+          6 => { 'name' => 'Магнолия', 'queue' => [] },
+          7 => { 'name' => 'Пентагон', 'queue' => [] },
+          8 => { 'name' => 'Военный', 'queue' => [] },
+          9 => { 'name' => 'Та сторона', 'queue' => [] },
+          10 => { 'name' => 'Парковый', 'queue' => [] }
+      }
 
       @num_queues = @points.size
       table = PointQueue.where("car > 0")
