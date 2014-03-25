@@ -204,27 +204,32 @@ class ApiController < ApplicationController
       end
       p = PointQueue.where(:car => @user.car)
       if p.size == 1
-        p[0].destroy
-        p2 = PointQueue.new
-        p2.point_id = params[:point_id]
-        ########################################################################
-        # для старой версии андроидного приложения
-        # unless params[:row].nil? 
-        #   p2.point_id = params[:row]
-        # end
-        # unless params['delzak'].nil?
-        #   Zakazi.where(:car => @user.car).delete_all if params['delzak'] == '1'
-        # end
-        ########################################################################
-        p2.car = @user.car
-        p2.state = params[:state]
-        if p2.save
-          # шлем сообщение обновления таблиц
-          if send_ref != true
-            res = { :error => "message REF send ERROR", :result => nil }
+        unless params[:point_id].nil? && params[:state].nil?
+          p[0].destroy
+          p2 = PointQueue.new
+          p2.point_id = params[:point_id]
+          ########################################################################
+          # для старой версии андроидного приложения
+          # unless params[:row].nil? 
+          #   p2.point_id = params[:row]
+          # end
+          # unless params['delzak'].nil?
+          #   Zakazi.where(:car => @user.car).delete_all if params['delzak'] == '1'
+          # end
+          ########################################################################
+          p2.car = @user.car
+          p2.state = params[:state]
+          if p2.save
+            # шлем сообщение обновления таблиц
+            if send_ref != true
+              res = { :error => "message REF send ERROR", :result => nil }
+            end
+          else
+            res = { :error => "write in DB error", :result => nil }
           end
         else
-          res = { :error => "write in DB error", :result => nil }
+          logger.debug "ERROR-> point_id or state is empty. point_id=#{params[:point_id]} state=params[:state]"
+          res = {:error => "ERROR-> point_id or state is empty", :result => nil}
         end
       else
 				logger.debug "ERROR-> amount car on point: #{p.size} for user: #{@user.login} and car: #{@user.car}"
