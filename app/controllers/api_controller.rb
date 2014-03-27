@@ -1,3 +1,5 @@
+require 'net/http'
+
 class ApiController < ApplicationController
   protect_from_forgery :except => [ :order_update, 
                                     :push_in_queue, 
