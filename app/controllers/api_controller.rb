@@ -387,7 +387,22 @@ class ApiController < ApplicationController
   end
 
   def karta
-    
+    uri = URI('http://nominatim.openstreetmap.org/search.php')
+    params = { :country => "Russia", :city => "Тихорецк", :street => "51 Военный городок", :format => "json" }
+    uri.query = URI.encode_www_form(params)
+    res = Net::HTTP.get_response(uri)
+    if res.is_a?(Net::HTTPSuccess)
+      logger.debug res.body
+      res_json = JSON.parse(res.body)
+      logger.debug res_json.class
+      logger.debug res_json.size
+      if res_json.size > 0
+        o = res_json[0]
+        logger.debug "lat: #{o["lat"]}"
+        logger.debug "display_name: #{o["display_name"]}"
+      end
+    end 
+    render :layout => false
   end
 
 private
