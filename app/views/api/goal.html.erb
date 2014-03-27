@@ -9,6 +9,10 @@
   <script src="http://www.openlayers.org/api/OpenLayers.js"></script>
   <script src="/javascripts/osm-marker-popup_2.js"></script>
 </head>
+<script type="text/javascript">
+  lat = <%= @lat %>;
+  lon = <%= @lon %>;
+</script>
 <body onload="init()">
   <div id="map" class="smallmap"></div>
 </body>

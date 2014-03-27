@@ -386,23 +386,63 @@ class ApiController < ApplicationController
     render :json => res
   end
 
-  def karta
-    uri = URI('http://nominatim.openstreetmap.org/search.php')
-    params = { :country => "Russia", :city => "Тихорецк", :street => "51 Военный городок", :format => "json" }
-    uri.query = URI.encode_www_form(params)
-    res = Net::HTTP.get_response(uri)
-    if res.is_a?(Net::HTTPSuccess)
-      logger.debug res.body
-      res_json = JSON.parse(res.body)
-      logger.debug res_json.class
-      logger.debug res_json.size
-      if res_json.size > 0
-        o = res_json[0]
-        logger.debug "lat: #{o["lat"]}"
-        logger.debug "display_name: #{o["display_name"]}"
+  # показать место куда должна прибыть машины на карте
+  def goal
+    res = { :error => "none", :result => nil }
+    @lat = nil
+    @lon = nil
+    @user = User.authenticate(params[:login], params[:password])
+    if @user
+      order = Zakazi.where(:car => @user.car)
+      if order.size == 1
+        street_name = nil
+        street_num = nil
+        # адрес в табл zakazi должен соответствовать виду "улица номердома"
+        rxp = Regexp.new('^(\D+)\ +(\d+\D?)$')
+        if rxp.match(order[0].adres) != nil
+          street_name = rxp.match(order[0].adres)[1]
+          street_num  = rxp.match(order[0].adres)[2]
+        end
+        if  street_name != nil && street_num != nil
+          uri = URI('http://nominatim.openstreetmap.org/search.php')
+          country = "Russia"
+          city = "Тихорецк"
+          street = "#{street_num} #{street_name.mb_chars.downcase.to_s}"
+          params = { :country => country, :city => city , :street => street, :format => "json" }
+          logger.debug params
+          uri.query = URI.encode_www_form(params)
+          res = Net::HTTP.get_response(uri)
+          if res.is_a?(Net::HTTPSuccess)
+            logger.debug res.body
+            res_json = JSON.parse(res.body)
+            if res_json.size == 1
+              o = res_json[0]
+              @lat = o["lat"]
+              @lon = o["lon"]
+              logger.debug "lat: #{@lat}"
+              logger.debug "lon: #{@lon}"
+              logger.debug "display_name: #{o["display_name"]}"
+              render :layout => false
+            elsif res_json.size > 1
+              res = { :error => "Openstreetmap find result for '#{street}' more 1", :result => nil }
+              render :json => res
+            else
+              res = { :error => "Openstreetmap find result for '#{street}' = 0", :result => nil }
+              render :json => res
+            end
+          end 
+        else
+          res = { :error => "Street name or street num is nil in zakazi for car: #{@user.car}. street_name: #{street_name}. street_num: #{street_num}. Source string for regexp is: #{order[0].adres}", :result => nil }
+          render :json => res
+        end
+      else
+        res = { :error => "Order not found. car: #{@user.car}", :result => nil }
+        render :json => res
       end
-    end 
-    render :layout => false
+    else
+      res = { :error => "Login or password incorrect", :result => nil }
+      render :json => res
+    end
   end
 
 private
