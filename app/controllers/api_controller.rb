@@ -426,24 +426,26 @@ class ApiController < ApplicationController
               logger.debug "display_name: #{o["display_name"]}"
               render :layout => false
             elsif res_json.size > 1
-              res = { :error => "Openstreetmap find result for '#{street}' more 1", :result => nil }
-              render :json => res
+              @errortext = "Openstreetmap find result for '#{street}' more 1"
+              render 'api/error'
             else
-              res = { :error => "Openstreetmap find result for '#{street}' = 0", :result => nil }
-              render :json => res
+              @errortext = "Openstreetmap find result for '#{street}' = 0"
+              render 'api/error'
             end
           end 
         else
-          res = { :error => "Street name or street num is nil in zakazi for car: #{@user.car}. street_name: #{street_name}. street_num: #{street_num}. Source string for regexp is: #{order[0].adres}", :result => nil }
-          render :json => res
+          @errortext = "Street name or street num is nil in zakazi for car: #{@user.car}. street_name: #{street_name}. street_num: #{street_num}. Source string for regexp is: #{order[0].adres}"
+          render 'api/error'
         end
       else
-        res = { :error => "Order not found. car: #{@user.car}", :result => nil }
-        render :json => res
+        @errortext = "Order not found. car: #{@user.car}"
+        render 'api/error'
       end
     else
-      res = { :error => "Login or password incorrect", :result => nil }
-      render :json => res
+      #res = { :error => "Login or password incorrect", :result => nil }
+      #render :json => res
+      @errortext = "Login or password incorrect"
+      render 'api/error'
     end
   end
 
