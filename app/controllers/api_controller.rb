@@ -1,3 +1,5 @@
+require 'net/http'
+
 class ApiController < ApplicationController
   protect_from_forgery :except => [ :order_update, 
                                     :push_in_queue, 
@@ -16,20 +18,20 @@ class ApiController < ApplicationController
         @user.update_attribute(:ip, request.remote_ip)
       else
         @user.update_attribute(:ip, request.env["HTTP_X_FORWARDED_FOR"])
-      end
-
-  	  @points =	{
-  								1 => { 'name' => 'на заказе', 'queue' => [] },
-  								2 => { 'name' => 'Черёмушки', 'queue' => [] },
-  								3 => { 'name' => 'Элеватор', 'queue' => [] },
-  								4 => { 'name' => 'Глобус', 'queue' => [] },
-  								5 => { 'name' => 'Рынок', 'queue' => [] },
-  								6 => { 'name' => 'Магнолия', 'queue' => [] },
-  								7 => { 'name' => 'Пентагон', 'queue' => [] },
-  								8 => { 'name' => 'Военный', 'queue' => [] },
-  								9 => { 'name' => 'Та сторона', 'queue' => [] },
-  								10 => { 'name' => 'Парковый', 'queue' => [] }
-  							}
+      end     
+       
+      @points ={
+          1 => { 'name' => 'на заказе', 'queue' => [] },
+          2 => { 'name' => 'Черёмушки', 'queue' => [] },
+          3 => { 'name' => 'Элеватор', 'queue' => [] },
+          4 => { 'name' => 'Глобус', 'queue' => [] },
+          5 => { 'name' => 'Рынок', 'queue' => [] },
+          6 => { 'name' => 'Магнолия', 'queue' => [] },
+          7 => { 'name' => 'Пентагон', 'queue' => [] },
+          8 => { 'name' => 'Военный', 'queue' => [] },
+          9 => { 'name' => 'Та сторона', 'queue' => [] },
+          10 => { 'name' => 'Парковый', 'queue' => [] }
+      }
 
       @num_queues = @points.size
       table = PointQueue.where("car > 0")
@@ -204,30 +206,36 @@ class ApiController < ApplicationController
       end
       p = PointQueue.where(:car => @user.car)
       if p.size == 1
-        p[0].destroy
-        p2 = PointQueue.new
-        p2.point_id = params[:point_id]
-        ########################################################################
-        # для старой версии андроидного приложения
-        unless params[:row].nil? 
-          p2.point_id = params[:row]
-        end
-        unless params['delzak'].nil?
-          Zakazi.where(:car => @user.car).delete_all if params['delzak'] == '1'
-        end
-        ########################################################################
-        p2.car = @user.car
-        p2.state = params[:state]
-        if p2.save
-          # шлем сообщение обновления таблиц
-          if send_ref != true
-            res = { :error => "message REF send ERROR", :result => nil }
+        unless params[:point_id].nil? && params[:state].nil?
+          p[0].destroy
+          p2 = PointQueue.new
+          p2.point_id = params[:point_id]
+          ########################################################################
+          # для старой версии андроидного приложения
+          # unless params[:row].nil? 
+          #   p2.point_id = params[:row]
+          # end
+          # unless params['delzak'].nil?
+          #   Zakazi.where(:car => @user.car).delete_all if params['delzak'] == '1'
+          # end
+          ########################################################################
+          p2.car = @user.car
+          p2.state = params[:state]
+          if p2.save
+            # шлем сообщение обновления таблиц
+            if send_ref != true
+              res = { :error => "message REF send ERROR", :result => nil }
+            end
+          else
+            res = { :error => "write in DB error", :result => nil }
           end
         else
-          res = { :error => "write in DB error", :result => nil }
+          logger.debug "ERROR-> point_id or state is empty. point_id=#{params[:point_id]} state=params[:state]"
+          res = {:error => "ERROR-> point_id or state is empty", :result => nil}
         end
       else
-        res = { :error => "amount car on point > 1", :result => nil }
+				logger.debug "ERROR-> amount car on point: #{p.size} for user: #{@user.login} and car: #{@user.car}"
+        res = { :error => "ERROR-> amount car on point != 1", :result => nil }
       end
     else
       res = { :error => "Login or password incorrect", :result => nil }
@@ -378,6 +386,67 @@ class ApiController < ApplicationController
       res = { :error => "Login or password incorrect", :result => nil }
     end
     render :json => res
+  end
+
+  # показать место куда должна прибыть машины на карте
+  def goal
+    res = { :error => "none", :result => nil }
+    @lat = nil
+    @lon = nil
+    @user = User.authenticate(params[:login], params[:password])
+    if @user
+      order = Zakazi.where(:car => @user.car)
+      if order.size == 1
+        street_name = nil
+        street_num = nil
+        # адрес в табл zakazi должен соответствовать виду "улица номердома"
+        rxp = Regexp.new('^(\D+)\ +(\d+\D?)$')
+        if rxp.match(order[0].adres) != nil
+          street_name = rxp.match(order[0].adres)[1]
+          street_num  = rxp.match(order[0].adres)[2]
+        end
+        if  street_name != nil && street_num != nil
+          uri = URI('http://nominatim.openstreetmap.org/search.php')
+          country = "Russia"
+          city = "Тихорецк"
+          street = "#{street_num} #{street_name.mb_chars.downcase.to_s}"
+          params = { :country => country, :city => city , :street => street, :format => "json" }
+          logger.debug params
+          uri.query = URI.encode_www_form(params)
+          res = Net::HTTP.get_response(uri)
+          if res.is_a?(Net::HTTPSuccess)
+            logger.debug res.body
+            res_json = JSON.parse(res.body)
+            if res_json.size == 1
+              o = res_json[0]
+              @lat = o["lat"]
+              @lon = o["lon"]
+              logger.debug "lat: #{@lat}"
+              logger.debug "lon: #{@lon}"
+              logger.debug "display_name: #{o["display_name"]}"
+              render :layout => false
+            elsif res_json.size > 1
+              @errortext = "Openstreetmap find result for '#{street}' more 1"
+              render 'api/error'
+            else
+              @errortext = "Openstreetmap find result for '#{street}' = 0"
+              render 'api/error'
+            end
+          end 
+        else
+          @errortext = "Street name or street num is nil in zakazi for car: #{@user.car}. street_name: #{street_name}. street_num: #{street_num}. Source string for regexp is: #{order[0].adres}"
+          render 'api/error'
+        end
+      else
+        @errortext = "Order not found. car: #{@user.car}"
+        render 'api/error'
+      end
+    else
+      #res = { :error => "Login or password incorrect", :result => nil }
+      #render :json => res
+      @errortext = "Login or password incorrect"
+      render 'api/error'
+    end
   end
 
 private

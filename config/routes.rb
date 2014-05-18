@@ -1,5 +1,7 @@
 Bee2::Application.routes.draw do
 
+  get "api/:login/:password/goal" => 'api#goal', :as => 'api_goal'
+
   post "api/:login/:password/zvonkiupd" => 'api#zvonkiupd', :as => 'api_zvonkiupd'
 
   post "api/:login/:password/caronorder" => 'api#caronorder', :as => 'api_caronorder'

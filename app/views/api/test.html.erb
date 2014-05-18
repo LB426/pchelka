@@ -50,3 +50,5 @@ Order update<br>
 	<%= text_field_tag 'state', '2' %><br>
 	<%= submit_tag 'Обновить состояние' %>
 <% end %>
+<hr>
+<%= link_to "Показать место куда должна приехать машина на карте", api_goal_path(current_user.login,current_user.password) %>
