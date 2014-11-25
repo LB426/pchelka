@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20131123122312) do
+ActiveRecord::Schema.define(version: 20141125125940) do
 
   create_table "abonenty", id: false, force: true do |t|
     t.integer "num"
@@ -155,13 +155,6 @@ ActiveRecord::Schema.define(version: 20131123122312) do
     t.integer "col"
   end
 
-  create_table "cqueue2", force: true do |t|
-    t.integer   "car",   default: 0, null: false
-    t.integer   "row",   default: 0, null: false
-    t.integer   "state", default: 0, null: false
-    t.timestamp "dt",                null: false
-  end
-
   create_table "disp", id: false, force: true do |t|
     t.integer "num"
     t.integer "day"
@@ -187,6 +180,8 @@ ActiveRecord::Schema.define(version: 20131123122312) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  add_index "point_queues", ["car"], name: "car", unique: true, using: :btree
 
   create_table "points", force: true do |t|
     t.string   "name"
@@ -214,7 +209,7 @@ ActiveRecord::Schema.define(version: 20131123122312) do
     t.string  "kode",      limit: 10
     t.date    "dat"
     t.time    "tim"
-    t.string  "adres",     limit: 50
+    t.string  "adres",     limit: 25
     t.integer "car"
     t.time    "beg"
     t.time    "en"
