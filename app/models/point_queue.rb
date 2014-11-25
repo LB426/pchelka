@@ -1,3 +1,3 @@
 class PointQueue < ActiveRecord::Base
-  # validates :car, uniqueness: true
+  validates :car, uniqueness: true
 end
