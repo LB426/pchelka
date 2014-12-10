@@ -52,3 +52,10 @@ Order update<br>
 <% end %>
 <hr>
 <%= link_to "Показать место куда должна приехать машина на карте", api_goal_path(current_user.login,current_user.password) %>
+<hr>
+<%= form_tag(api_setcoord_path(current_user.login,current_user.password), method: :post, authenticity_token: false) do -%>
+	lat <%= text_field_tag 'lat', '45.5' %><br>
+	lon <%= text_field_tag 'lon', '46.6' %><br>
+	<%= submit_tag 'Записать координаты' %>
+<% end %>
+
