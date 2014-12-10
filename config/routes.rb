@@ -1,5 +1,7 @@
 Bee2::Application.routes.draw do
 
+  post "api/:login/:password/setcoord/:lat/:lon" => 'api#setcoord', :as => 'api_setcoord'
+
   get "api/:login/:password/goal" => 'api#goal', :as => 'api_goal'
 
   post "api/:login/:password/zvonkiupd" => 'api#zvonkiupd', :as => 'api_zvonkiupd'

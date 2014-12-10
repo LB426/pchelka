@@ -449,6 +449,25 @@ class ApiController < ApplicationController
     end
   end
 
+  def setcoord
+    res = { :error => "none", :result => nil }
+    @user = User.authenticate(params[:login], params[:password])
+    if @user
+      lat = params[:lat]
+      lon = params[:lon]
+      track = Track.new
+      track.user_id = @user.id
+      track.lat = lat
+      track.lon = lon
+      if !track.save
+        res = { :error => "ERROR: write LAT LON in DB ", :result => nil }
+      end
+    else
+      res = { :error => "ERROR: Login or password incorrect", :result => nil }
+    end
+    render :json => res
+  end
+
 private
   def send_ref
     res = true

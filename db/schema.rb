@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141125125940) do
+ActiveRecord::Schema.define(version: 20141210122103) do
 
   create_table "abonenty", id: false, force: true do |t|
     t.integer "num"
@@ -198,6 +198,14 @@ ActiveRecord::Schema.define(version: 20141125125940) do
 
   create_table "streets", id: false, force: true do |t|
     t.string "street", limit: 50
+  end
+
+  create_table "tracks", force: true do |t|
+    t.integer  "user_id"
+    t.decimal  "lon",        precision: 13, scale: 10
+    t.decimal  "lat",        precision: 13, scale: 10
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "users", force: true do |t|
