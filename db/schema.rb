@@ -155,13 +155,6 @@ ActiveRecord::Schema.define(version: 20141210122103) do
     t.integer "col"
   end
 
-  create_table "cqueue2", force: true do |t|
-    t.integer   "car",   default: 0, null: false
-    t.integer   "row",   default: 0, null: false
-    t.integer   "state", default: 0, null: false
-    t.timestamp "dt",                null: false
-  end
-
   create_table "disp", id: false, force: true do |t|
     t.integer "num"
     t.integer "day"
@@ -224,7 +217,7 @@ ActiveRecord::Schema.define(version: 20141210122103) do
     t.string  "kode",      limit: 10
     t.date    "dat"
     t.time    "tim"
-    t.string  "adres",     limit: 50
+    t.string  "adres",     limit: 25
     t.integer "car"
     t.time    "beg"
     t.time    "en"
