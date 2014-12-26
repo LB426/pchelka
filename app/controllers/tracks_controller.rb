@@ -1,5 +1,5 @@
 class TracksController < ApplicationController
-  before_action :set_track, only: [:show, :edit, :update, :destroy]
+  before_action :set_track, only: [:edit, :update, :destroy]
 
   # GET /tracks
   # GET /tracks.json
@@ -10,7 +10,8 @@ class TracksController < ApplicationController
   # GET /tracks/1
   # GET /tracks/1.json
   def show
-    @coordinates = Track.all
+    #@coordinates = Track.find_all_by_user_id(params[:driver_id])
+    @coordinates = Track.where(:user_id => params[:driver_id])
   end
 
   # GET /tracks/new
@@ -65,7 +66,7 @@ class TracksController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_track
-      @track = Track.find(params[:driver_id])
+      @track = Track.find_by_user_id(params[:driver_id])
     end
 
     # Never trust parameters from the scary internet, only allow the white list through.
