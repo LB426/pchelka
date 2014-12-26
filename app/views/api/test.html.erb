@@ -58,4 +58,6 @@ Order update<br>
 	lon <%= text_field_tag 'lon', '46.6' %><br>
 	<%= submit_tag 'Записать координаты' %>
 <% end %>
+<hr>
+<%= link_to "Показать трек для #{current_user.login}", track_show_path(current_user) %>
 

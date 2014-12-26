@@ -4,7 +4,6 @@ class CreateTracks < ActiveRecord::Migration
       t.integer :user_id
       t.decimal :lon, precision: 13, scale: 10
       t.decimal :lat, precision: 13, scale: 10
-
       t.timestamps
     end
   end

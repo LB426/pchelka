@@ -1,5 +1,7 @@
 Bee2::Application.routes.draw do
 
+  get "tracks/:driver_id/show" => 'tracks#show', :as => 'track_show'
+
   post "api/:login/:password/setcoord" => 'api#setcoord', :as => 'api_setcoord'
 
   get "api/:login/:password/goal" => 'api#goal', :as => 'api_goal'
