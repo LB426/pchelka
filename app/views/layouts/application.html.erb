@@ -8,17 +8,7 @@
 </head>
 <body>
   
-  <div id="user_nav">
-    <%= link_to "home", root_path %> |
-    <% if current_user %>
-      <%= current_user.login %> |
-      <%= link_to "Logout", logout_path %> |
-      <%= link_to "API test", api_test_path %>
-    <% else %>
-      <%= link_to "Signup", "sign_up_path" %> or
-      <%= link_to "login", login_path %>
-    <% end %>
-  </div>
+  <%= render 'layouts/nav' %>
 
   <% flash.each do |name, msg| %>
     <%= content_tag :div, msg, :id => "flash_#{name}" %>

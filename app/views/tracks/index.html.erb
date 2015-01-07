@@ -3,23 +3,38 @@
 <table>
   <thead>
     <tr>
-      <th></th>
-      <th></th>
-      <th></th>
+      <th>User</th>
+      <th>track</th>
     </tr>
   </thead>
 
   <tbody>
-    <% @tracks.each do |track| %>
+    <% @users.each do |user| %>
       <tr>
-        <td><%= link_to 'Show', track %></td>
-        <td><%= link_to 'Edit', edit_track_path(track) %></td>
-        <td><%= link_to 'Destroy', track, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        <td><%= user.login %></td>
+        <td>
+          <% track = Track.find_by_user_id(user.id) %>
+          <% if track %>
+            <%= link_to 'Show', track_show_path(user.id) %>
+          <% else %>
+            нет трека
+          <% end %>
+        </td>
+        <td>
+          <% if track %>
+            <%= form_tag(track_show2_path(user.id), method: :post, authenticity_token: true) do -%>
+              <%= text_field_tag 'dt1', '2015-01-01 00:00', :size => 12 %>
+              <%= text_field_tag 'dt2', '2015-01-31 23:59', :size => 12 %>
+              <%= submit_tag 'Показать трек' %>
+            <% end %>
+          <% end %>
+        </td>
+        <td>
+          <% if track %>
+            <%= link_to "Последняя точка", track_last_path(user.id) %>
+          <% end %>
+        </td>
       </tr>
     <% end %>
   </tbody>
 </table>
-
-<br>
-
-<%= link_to 'New Track', new_track_path %>

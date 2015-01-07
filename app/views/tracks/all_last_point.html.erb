@@ -1,0 +1,22 @@
+<h1>Последнее место</h1>
+<p id="notice"><%= notice %></p>
+<script>
+  function init() {
+    map = new OpenLayers.Map("mapdiv");
+    var mapnik = new OpenLayers.Layer.OSM();
+    map.addLayer(mapnik);
+    var zoom = 13;
+    var markers = new OpenLayers.Layer.Markers( "Markers" );
+    map.addLayer(markers);
+    <% @coordinates.each do |coordinate| %>
+      var lonlat = new OpenLayers.LonLat(<%= coordinate.lon %>, <%= coordinate.lat %>).transform(
+        new OpenLayers.Projection("EPSG:4326"), // transform from WGS 1984
+        new OpenLayers.Projection("EPSG:900913") // to Spherical Mercator
+      );
+      markers.addMarker(new OpenLayers.Marker(lonlat));
+    <% end %>
+    map.setCenter(lonlat, zoom);
+  }
+</script>
+
+<div id="mapdiv"></div>

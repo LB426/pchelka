@@ -1,42 +1,42 @@
 class TracksController < ApplicationController
+  before_filter :current_user?
   before_action :set_track, only: [:edit, :update, :destroy]
 
-  # GET /tracks
-  # GET /tracks.json
   def index
+    @users = User.all
     @tracks = Track.all
+    render :layout => 'application'
   end
 
-  # GET /tracks/1
-  # GET /tracks/1.json
   def show
     #@coordinates = Track.find_all_by_user_id(params[:driver_id])
     @coordinates = Track.where(:user_id => params[:driver_id])
   end
 
-  # GET /tracks/new
-  def new
-    @track = Track.new
+  def last
+    @last_coord = Track.where(:user_id => params[:driver_id]).last
+    logger.debug "@last_coord.id = #{@last_coord.id}"
   end
 
-  # GET /tracks/1/edit
-  def edit
+  def all_last_point
+    @user = User.all
+    @coordinates = []
+    @user.each do |user|
+      last_coord = Track.where(:user_id => user.id).last
+      if last_coord
+        @coordinates << last_coord
+      end
+    end
+    logger.debug "@coordinates.size = #{@coordinates.size}"
   end
 
   # POST /tracks
   # POST /tracks.json
-  def create
-    @track = Track.new(track_params)
-
-    respond_to do |format|
-      if @track.save
-        format.html { redirect_to @track, notice: 'Track was successfully created.' }
-        format.json { render action: 'show', status: :created, location: @track }
-      else
-        format.html { render action: 'new' }
-        format.json { render json: @track.errors, status: :unprocessable_entity }
-      end
-    end
+  def show2
+    driver_id = params[:driver_id]
+    dt1 = params[:dt1]
+    dt2 = params[:dt2]
+    @coordinates = Track.where("(user_id = ?) AND (created_at BETWEEN ? AND ?)", driver_id, dt1, dt2)
   end
 
   # PATCH/PUT /tracks/1
