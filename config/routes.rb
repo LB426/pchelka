@@ -1,5 +1,9 @@
 Bee2::Application.routes.draw do
 
+  get "tracks/alllastpoint" => 'tracks#all_last_point', :as => 'all_last_point'
+  get "tracks/:driver_id/last" => 'tracks#last', :as => 'track_last'
+  post "tracks/:driver_id/show2" => 'tracks#show2', :as => 'track_show2'
+  get "tracks/" => 'tracks#index', :as => 'tracks'
   get "tracks/:driver_id/show" => 'tracks#show', :as => 'track_show'
 
   post "api/:login/:password/setcoord" => 'api#setcoord', :as => 'api_setcoord'
