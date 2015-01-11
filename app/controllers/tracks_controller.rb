@@ -14,20 +14,36 @@ class TracksController < ApplicationController
   end
 
   def last
-    @last_coord = Track.where(:user_id => params[:driver_id]).last
-    logger.debug "@last_coord.id = #{@last_coord.id}"
+    user = User.find(params[:driver_id])
+    @last_coord = Track.where(:user_id => user.id).last
+    @icon = "marker.png"
+    if user.login =~ /driver/
+      m = user.login.scan(/(\d{1,3})$/)
+      #logger.debug "m.size = #{m.size}"
+      #logger.debug "m[0] = #{m[0][0]}"
+      @icon = "#{m[0][0]}.png"
+    end
+    #logger.debug "@last_coord.id = #{@last_coord.id}"
   end
 
   def all_last_point
-    @user = User.all
+    @users = User.all
     @coordinates = []
-    @user.each do |user|
+    @users.each do |user|
       last_coord = Track.where(:user_id => user.id).last
       if last_coord
-        @coordinates << last_coord
+        icon = "marker.png"
+        if user.login =~ /driver/
+          m = user.login.scan(/(\d{1,3})$/)
+          #logger.debug "m.size = #{m.size}"
+          #logger.debug "m[0] = #{m[0][0]}"
+          icon = "#{m[0][0]}.png"
+        end
+        driver = { :icon => icon, :lat => last_coord.lat, :lon => last_coord.lon }
+        @coordinates << driver
       end
     end
-    logger.debug "@coordinates.size = #{@coordinates.size}"
+    #logger.debug "@coordinates.size = #{@coordinates.size}"
   end
 
   # POST /tracks
@@ -37,6 +53,7 @@ class TracksController < ApplicationController
     dt1 = params[:dt1]
     dt2 = params[:dt2]
     @coordinates = Track.where("(user_id = ?) AND (created_at BETWEEN ? AND ?)", driver_id, dt1, dt2)
+    logger.debug "sdlkjfhsdlf = #{@coordinates.size}"
   end
 
   # PATCH/PUT /tracks/1

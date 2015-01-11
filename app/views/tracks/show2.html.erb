@@ -1,4 +1,8 @@
+<% if @coordinates.size > 0 %>
 <h1>Трек по времени</h1>
+<% else %>
+<h1>Нет трека для этого времени</h1>
+<% end %>
 <p id="notice"><%= notice %></p>
 <script>
   function init() {
