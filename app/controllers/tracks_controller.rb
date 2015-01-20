@@ -53,7 +53,6 @@ class TracksController < ApplicationController
     dt1 = params[:dt1]
     dt2 = params[:dt2]
     @coordinates = Track.where("(user_id = ?) AND (created_at BETWEEN ? AND ?)", driver_id, dt1, dt2)
-    logger.debug "sdlkjfhsdlf = #{@coordinates.size}"
   end
 
   # PATCH/PUT /tracks/1

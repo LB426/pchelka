@@ -20,6 +20,18 @@
       markers.addMarker(new OpenLayers.Marker(lonlat));
     <% end %>
     map.setCenter(lonlat, zoom);
+    lonlat = new OpenLayers.LonLat(<%= @coordinates[0].lon %>, <%= @coordinates[0].lat %>).transform(
+      new OpenLayers.Projection("EPSG:4326"), // transform from WGS 1984
+      new OpenLayers.Projection("EPSG:900913") // to Spherical Mercator
+    );
+    var popup = new OpenLayers.Popup.FramedCloud("Popup", lonlat, null, "<%= @coordinates[0].created_at.strftime("%Y-%m-%d %H:%M") %>", null, true);
+    map.addPopup(popup, false);
+    lonlat = new OpenLayers.LonLat(<%= @coordinates[@coordinates.size-1].lon %>, <%= @coordinates[@coordinates.size-1].lat %>).transform(
+      new OpenLayers.Projection("EPSG:4326"), // transform from WGS 1984
+      new OpenLayers.Projection("EPSG:900913") // to Spherical Mercator
+    );
+    var popup = new OpenLayers.Popup.FramedCloud("Popup", lonlat, null, "<%= @coordinates[@coordinates.size-1].created_at.strftime("%Y-%m-%d %H:%M") %>", null, true);
+    map.addPopup(popup, false);
   }
 </script>
 
