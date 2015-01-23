@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20141226135937) do
+ActiveRecord::Schema.define(version: 20150123111236) do
 
   create_table "abonenty", id: false, force: true do |t|
     t.integer "num"
@@ -209,6 +209,7 @@ ActiveRecord::Schema.define(version: 20141226135937) do
     t.integer  "car"
     t.string   "group",      default: "driver"
     t.string   "ip"
+    t.datetime "alarm"
   end
 
   create_table "zakazi", id: false, force: true do |t|
