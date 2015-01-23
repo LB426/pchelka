@@ -468,8 +468,30 @@ class ApiController < ApplicationController
     render :json => res
   end
 
+  def alarm
+    res = { :error => "none", :result => nil }
+    logger.debug "ALARM: user #{params[:login]} alarm incoming time: #{Time.now}"
+    alarm_string = "ALARM #{params[:login]} #{Time.now.strftime("%Y-%m-%d_%H:%M:%S")}"
+    send_message(alarm_string)
+    @user = User.authenticate(params[:login], params[:password])
+    if @user
+      @user.alarm = Time.now
+      if !@user.save
+        res = { :error => "ERROR: write alarm date in DataBase ", :result => nil }
+      end
+    else
+      res = { :error => "ERROR: Login or password incorrect", :result => nil }
+    end
+    render :json => res
+  end
+
 private
+
   def send_ref
+    send_message
+  end
+
+  def send_message( message = "REF" )
     res = true
     dispatchers = User.where(group: 'dispatcher')
     dispatchers.each do |disp|
@@ -477,7 +499,7 @@ private
       unless disp.ip.nil? || disp.ip.empty?
         begin
           $s = TCPSocket.open(disp.ip, 6004)
-          $s.puts "REF"
+          $s.puts message
         rescue Exception => e
           logger.debug "Exception in ApiController refresh_orders : #{e.message} "
           res = false

@@ -60,4 +60,5 @@ Order update<br>
 <% end %>
 <hr>
 <%= link_to "Показать трек для #{current_user.login}", track_show_path(current_user) %>
-
+<hr>
+<%= link_to "Нажать тревожную кнопку", api_alarm_path(current_user.login, current_user.password) %>

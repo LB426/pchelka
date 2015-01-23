@@ -1,5 +1,7 @@
 Bee2::Application.routes.draw do
 
+  get "api/:login/:password/alarm" => 'api#alarm', :as => 'api_alarm'
+
   get "tracks/alllastpoint" => 'tracks#all_last_point', :as => 'all_last_point'
   get "tracks/:driver_id/last" => 'tracks#last', :as => 'track_last'
   post "tracks/:driver_id/show2" => 'tracks#show2', :as => 'track_show2'
