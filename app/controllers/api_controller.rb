@@ -485,6 +485,31 @@ class ApiController < ApplicationController
     render :json => res
   end
 
+  def getlastdrivercoord
+    res = { :error => "none", :result => nil }
+    drivers_in_queue = PointQueue.where("car > 0")
+    if drivers_in_queue
+      @coordinates = []
+      drivers_in_queue.each do |diq|
+        user = User.find_by_car(diq.car)
+        last_coord = Track.where(:user_id => user.id).last
+        if last_coord
+          icon = "marker.png"
+          if user.login =~ /driver/
+            m = user.login.scan(/(\d{1,3})$/)
+            icon = "#{m[0][0]}.png"
+          end
+          driver = { :icon => icon, :lat => last_coord.lat, :lon => last_coord.lon }
+          @coordinates << driver
+        end
+      end
+      res = @coordinates unless @coordinates.size < 1
+    else
+      res = { :error => "ERROR: no drivers with car>0 in point_queues. api getlastdrivercoord.", :result => nil }
+    end
+    render :json => res
+  end
+
 private
 
   def send_ref

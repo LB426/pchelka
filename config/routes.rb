@@ -1,5 +1,7 @@
 Bee2::Application.routes.draw do
 
+  get "api/:login/:password/getlastdrivercoord" => 'api#getlastdrivercoord', :as => 'api_getlastdrivercoord'
+  
   get "api/:login/:password/alarm" => 'api#alarm', :as => 'api_alarm'
 
   get "tracks/alllastpoint" => 'tracks#all_last_point', :as => 'all_last_point'
