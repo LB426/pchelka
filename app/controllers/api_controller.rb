@@ -487,7 +487,7 @@ class ApiController < ApplicationController
 
   def getlastdrivercoord
     res = { :error => "none", :result => nil }
-    drivers_in_queue = PointQueue.where("car > 0")
+    drivers_in_queue = PointQueue.where("point_id > 0")
     if drivers_in_queue
       @coordinates = []
       drivers_in_queue.each do |diq|
