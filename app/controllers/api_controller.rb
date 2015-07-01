@@ -64,6 +64,7 @@ class ApiController < ApplicationController
   
   def test
   	current_user?
+    render :layout => 'application'
   end
 
   def order

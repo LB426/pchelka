@@ -21,6 +21,15 @@ private
     return false
   end
   
+  def current_user_admin?
+    if current_user && current_user.group =~ /admin/
+      return true 
+    end
+    flash[:notice] = "no priveleges for this: controller: #{params[:controller]} , action: #{params[:action]}"
+    redirect_to login_path
+    return false
+  end
+
   def write_to_log
     logrec = Log.new
     if request.env["HTTP_X_FORWARDED_FOR"].nil? == true

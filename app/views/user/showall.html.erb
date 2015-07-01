@@ -1,0 +1,36 @@
+<style type="text/css">
+  table.mystyle
+  {
+      border-width: 0 0 1px 1px;
+      border-spacing: 0;
+      border-collapse: collapse;
+      border-style: solid;
+  }
+  .mystyle td, .mystyle th
+  {
+      margin: 0;
+      padding: 4px;
+      border-width: 1px 1px 0 0;
+      border-style: solid;
+      text-align: center;
+  }
+</style>
+
+<table class="mystyle">
+  <thead>
+    <tr>
+      <th>Имя</th>
+      <th>Группа</th>
+      <th>Пароль</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @users.each do |user| %>
+    <tr>
+      <td><%= user.login %></td>
+      <td><%= user.group %></td>
+      <td><%= user.password %></td>
+    </tr>
+    <% end %>
+  </tbody>
+</table>
