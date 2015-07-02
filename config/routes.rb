@@ -1,5 +1,9 @@
 Bee2::Application.routes.draw do
 
+  post 'user/:id/settings/taximeter/update' => 'user#update_settings_taximeter', :as => 'user_update_settings_taximeter'
+  get 'user/:id/settings/taximeter' => 'user#settings_taximeter', :as => 'user_show_settings_taximeter'
+  post 'user/:id/update' => 'user#update', :as => 'user_update'
+  get 'user/:id/edit' => 'user#edit', :as => 'user_edit'
   get 'user/showall'
   get 'user/index'
 

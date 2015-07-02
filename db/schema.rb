@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150701112804) do
+ActiveRecord::Schema.define(version: 20150702124803) do
 
   create_table "abonenty", id: false, force: :cascade do |t|
     t.integer "num",        limit: 4
@@ -202,15 +202,17 @@ ActiveRecord::Schema.define(version: 20150701112804) do
   end
 
   create_table "users", force: :cascade do |t|
-    t.string   "login",      limit: 255
-    t.string   "password",   limit: 255
+    t.string   "login",           limit: 255
+    t.string   "password",        limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.integer  "car",        limit: 4
-    t.string   "group",      limit: 255,   default: "driver"
-    t.string   "ip",         limit: 255
+    t.integer  "car",             limit: 4
+    t.string   "group",           limit: 255,   default: "driver"
+    t.string   "ip",              limit: 255
     t.datetime "alarm"
-    t.text     "settings",   limit: 65535
+    t.text     "settings",        limit: 65535
+    t.string   "monetary_unit",   limit: 255,   default: "руб"
+    t.integer  "monetary_credit", limit: 4,     default: 0
   end
 
   create_table "zakazi", id: false, force: :cascade do |t|
