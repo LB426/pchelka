@@ -1,0 +1,39 @@
+<h3>Настройка таксометра<h3>
+
+<%= form_tag(user_update_settings_taximeter_path(@user), method: "post") do %>
+  <p>
+    <%= label_tag(:cost_km_city, "Стоимость #{@user.monetary_unit}/км город:") %>
+    <%= text_field_tag(:cost_km_city, @cost_km_city) %>
+  </p>
+  <p>
+    <%= label_tag(:cost_km_suburb, "Стоимость #{@user.monetary_unit}/км пригород:") %>
+    <%= text_field_tag(:cost_km_suburb, @cost_km_suburb) %>
+  </p>
+  <p>
+    <%= label_tag(:cost_km_intercity, "Стоимость #{@user.monetary_unit}/км межгород:") %>
+    <%= text_field_tag(:cost_km_intercity, @cost_km_intercity) %>
+  </p>
+  <p>
+    <%= label_tag(:cost_stopping, "Стоимость остановки по просьбе пассажира, #{@user.monetary_unit} :") %>
+    <%= text_field_tag(:cost_stopping, @cost_stopping) %>
+  </p>
+  <p>
+    <%= label_tag(:cost_passenger_boarding_day, "Стоимость посадки пассажира днём, #{@user.monetary_unit} :") %>
+    <%= text_field_tag(:cost_passenger_boarding_day, @cost_passenger_boarding_day) %>
+  </p>
+  <p>
+    <%= label_tag(:cost_passenger_boarding_night, "Стоимость посадки пассажира ночью, #{@user.monetary_unit} :") %>
+    <%= text_field_tag(:cost_passenger_boarding_night, @cost_passenger_boarding_night) %>
+  </p>
+  <p>
+    <%= label_tag(:cost_passenger_pre_boarding_day, "Стоимость предварительной посадки пассажира днём, #{@user.monetary_unit} :") %>
+    <%= text_field_tag(:cost_passenger_pre_boarding_day, @cost_passenger_pre_boarding_day) %>
+  </p>
+  <p>
+    <%= label_tag(:cost_passenger_pre_boarding_night, "Стоимость предварительной посадки пассажира ночью, #{@user.monetary_unit} :") %>
+    <%= text_field_tag(:cost_passenger_pre_boarding_night, @cost_passenger_pre_boarding_night) %>
+  </p>
+  <p>
+    <%= submit_tag("Установить") %>
+  </p>
+<% end %>

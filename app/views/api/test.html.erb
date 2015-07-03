@@ -59,3 +59,5 @@ Order update<br>
 <%= link_to "Нажать тревожную кнопку", api_alarm_path(current_user.login, current_user.password) %>
 <hr>
 <%= link_to "Получить последние координаты ВСЕХ машин", api_getlastdrivercoord_path(current_user.login, current_user.password) %>
+<hr>
+<%= link_to "Считать таксометр", api_taximeter_path(current_user.login, current_user.password) %>
