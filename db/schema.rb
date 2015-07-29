@@ -155,11 +155,11 @@ ActiveRecord::Schema.define(version: 20150702124803) do
     t.integer "col",   limit: 4
   end
 
-  create_table "disp", id: false, force: true do |t|
-    t.integer "num"
-    t.integer "day"
-    t.integer "week"
-    t.integer "working"
+  create_table "disp", id: false, force: :cascade do |t|
+    t.integer "num",     limit: 4
+    t.integer "day",     limit: 4
+    t.integer "week",    limit: 4
+    t.integer "working", limit: 4
   end
 
   create_table "logs", force: :cascade do |t|
@@ -222,11 +222,7 @@ ActiveRecord::Schema.define(version: 20150702124803) do
     t.date    "dat"
     t.time    "tim"
     t.string  "adres",     limit: 25
-<<<<<<< HEAD
-    t.integer "car"
-=======
     t.integer "car",       limit: 4
->>>>>>> 6a535ac8869f9b451c81386eed64611f3d193a18
     t.time    "beg"
     t.time    "en"
     t.string  "place_end", limit: 25
