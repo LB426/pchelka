@@ -64,6 +64,7 @@ class ApiController < ApplicationController
   
   def test
   	current_user?
+    render :layout => 'application'
   end
 
   def order
@@ -210,15 +211,6 @@ class ApiController < ApplicationController
           p[0].destroy
           p2 = PointQueue.new
           p2.point_id = params[:point_id]
-          ########################################################################
-          # для старой версии андроидного приложения
-          # unless params[:row].nil? 
-          #   p2.point_id = params[:row]
-          # end
-          # unless params['delzak'].nil?
-          #   Zakazi.where(:car => @user.car).delete_all if params['delzak'] == '1'
-          # end
-          ########################################################################
           p2.car = @user.car
           p2.state = params[:state]
           if p2.save
@@ -326,7 +318,6 @@ class ApiController < ApplicationController
     if @user
       unless params[:order_id].nil? && params[:car].nil?
         logger.debug "order_id=#{params[:order_id]} , car=#{params[:car]}"
-
       else
         res = { :error => "order_id or car is nil", :result => nil }
       end
@@ -506,6 +497,29 @@ class ApiController < ApplicationController
       res = @coordinates unless @coordinates.size < 1
     else
       res = { :error => "ERROR: no drivers with car>0 in point_queues. api getlastdrivercoord.", :result => nil }
+    end
+    render :json => res
+  end
+
+  def taximeter
+    res = { :error => "none", :result => nil }
+    @user = User.authenticate(params[:login], params[:password])
+    if @user
+      taximeter = @user.settings["taximeter"]
+      res = { :error => "none",
+              :result =>  {  
+                            'cost_km_city' => taximeter["cost_km_city"],
+                            'cost_km_suburb' => taximeter["cost_km_suburb"],
+                            'cost_km_intercity' => taximeter["cost_km_intercity"],
+                            'cost_stopping' => taximeter["cost_stopping"],
+                            'cost_passenger_boarding_day' => taximeter["cost_passenger_boarding_day"],
+                            'cost_passenger_boarding_night' => taximeter["cost_passenger_boarding_night"],
+                            'cost_passenger_pre_boarding_day' => taximeter["cost_passenger_pre_boarding_day"],
+                            'cost_passenger_pre_boarding_night' => taximeter["cost_passenger_pre_boarding_night"]
+                          }
+            }
+    else
+      res = { :error => "ERROR: Login or password incorrect", :result => nil }
     end
     render :json => res
   end

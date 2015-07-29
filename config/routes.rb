@@ -1,5 +1,14 @@
 Bee2::Application.routes.draw do
 
+  get "api/:login/:password/taximeter" => 'api#taximeter', :as => 'api_taximeter'
+
+  post 'user/:id/settings/taximeter/update' => 'user#update_settings_taximeter', :as => 'user_update_settings_taximeter'
+  get 'user/:id/settings/taximeter' => 'user#settings_taximeter', :as => 'user_show_settings_taximeter'
+  post 'user/:id/update' => 'user#update', :as => 'user_update'
+  get 'user/:id/edit' => 'user#edit', :as => 'user_edit'
+  get 'user/showall'
+  get 'user/index'
+
   get "api/:login/:password/getlastdrivercoord" => 'api#getlastdrivercoord', :as => 'api_getlastdrivercoord'
   
   get "api/:login/:password/alarm" => 'api#alarm', :as => 'api_alarm'

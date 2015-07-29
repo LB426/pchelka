@@ -1,8 +1,3 @@
-<p>
-	<%= link_to "Home", root_url %> | 
-	<%= link_to "logout", logout_path %> |
-	<%= current_user.login %>
-</p>
 <ul>
 	<li><%= link_to "Тест запроса очереди", api_queue_path(current_user.login,current_user.password) %></li>
 	<li><%= link_to "Тест запроса заказа", api_order_path(current_user.login,current_user.password) %></li>
@@ -64,3 +59,5 @@ Order update<br>
 <%= link_to "Нажать тревожную кнопку", api_alarm_path(current_user.login, current_user.password) %>
 <hr>
 <%= link_to "Получить последние координаты ВСЕХ машин", api_getlastdrivercoord_path(current_user.login, current_user.password) %>
+<hr>
+<%= link_to "Считать таксометр", api_taximeter_path(current_user.login, current_user.password) %>

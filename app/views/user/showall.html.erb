@@ -1,0 +1,52 @@
+<style type="text/css">
+  table.mystyle
+  {
+      border-width: 0 0 1px 1px;
+      border-spacing: 0;
+      border-collapse: collapse;
+      border-style: solid;
+  }
+  .mystyle td, .mystyle th
+  {
+      margin: 0;
+      padding: 4px;
+      border-width: 1px 1px 0 0;
+      border-style: solid;
+      text-align: center;
+  }
+</style>
+
+<table class="mystyle">
+  <thead>
+    <tr>
+      <th>&nbsp</th>
+      <th>Имя</th>
+      <th>Группа</th>
+      <th>Пароль</th>
+      <th>Создан</th>
+      <th>Изменён</th>
+      <th>Car</th>
+      <th>Last IP</th>
+      <th>Last ALARM</th>
+      <th>Settings</th>
+      <th>Кредит</th>
+    </tr
+  </thead>
+  <tbody>
+    <% @users.each do |user| %>
+    <tr>
+      <td><%= link_to "edit", user_edit_path(user) %></td>
+      <td><%= user.login %></td>
+      <td><%= user.group %></td>
+      <td><%= user.password %></td>
+      <td><%= user.created_at %></td>
+      <td><%= user.updated_at %></td>
+      <td><%= user.car %></td>
+      <td><%= user.ip %></td>
+      <td><%= user.alarm %></td>
+      <td><%= link_to "Таксометр", user_show_settings_taximeter_path(user)  %></td>
+      <td><%= user.monetary_credit %></td>
+    </tr>
+    <% end %>
+  </tbody>
+</table>
