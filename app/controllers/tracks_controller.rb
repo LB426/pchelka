@@ -43,7 +43,7 @@ class TracksController < ApplicationController
         @coordinates << driver
       end
     end
-    #logger.debug "@coordinates.size = #{@coordinates.size}"
+    logger.debug "@coordinates.size = #{@coordinates.size}"
   end
 
   # POST /tracks

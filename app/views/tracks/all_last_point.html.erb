@@ -5,32 +5,32 @@
   var icon = undefined;
   var updateinterval = 15000;
   var zoom = 14;
-  var lonlatcenter = new OpenLayers.LonLat( 40.12489558, 45.85340927).transform( new OpenLayers.Projection("EPSG:4326"), new OpenLayers.Projection("EPSG:900913") );
+  var lonlatcenter = new OpenLayers.LonLat( 40.12489558, 45.85340927).transform(
+    new OpenLayers.Projection("EPSG:4326"), new OpenLayers.Projection("EPSG:900913"));
   
   function refresh(){
-
     markers.destroy();
-
     markers = new OpenLayers.Layer.Markers( "Markers" );
     map.addLayer(markers);
-   
     $.getJSON( "<%= api_getlastdrivercoord_path(current_user.login, current_user.password) %>", function( jsondata ) {
       for (var i = 0; i < jsondata.length; i++) {
-        lonlat = new OpenLayers.LonLat(jsondata[i].lon, jsondata[i].lat).transform( new OpenLayers.Projection("EPSG:4326"), new OpenLayers.Projection("EPSG:900913") );
+        lonlat = new OpenLayers.LonLat( jsondata[i].lon, jsondata[i].lat).transform( 
+          new OpenLayers.Projection("EPSG:4326"), 
+          new OpenLayers.Projection("EPSG:900913") 
+        );
         icon = new OpenLayers.Icon('/img/'+jsondata[i].icon);
         markers.addMarker(new OpenLayers.Marker(lonlat, icon));
       }
     });
-
   }
 
   function init() {
     var mapnik = new OpenLayers.Layer.OSM();
     map = new OpenLayers.Map("mapdiv");
     map.addLayer(mapnik);
-
     markers = new OpenLayers.Layer.Markers( "Markers" );
     map.addLayer(markers);
+    /*
     <% @coordinates.each do |coordinate| %>
       lonlat = new OpenLayers.LonLat(<%= coordinate[:lon] %>, <%= coordinate[:lat] %>).transform(
         new OpenLayers.Projection("EPSG:4326"), // transform from WGS 1984
@@ -39,12 +39,10 @@
       icon = new OpenLayers.Icon('/img/<%= coordinate[:icon] %>');
       markers.addMarker(new OpenLayers.Marker(lonlat,icon));
     <% end %>
-
+    */
     map.setCenter(lonlatcenter, zoom);
-    
     setTimeout('refresh();', 1000);
     setInterval('refresh();', updateinterval);
   }
 </script>
-
 <div id="mapdiv"></div>
