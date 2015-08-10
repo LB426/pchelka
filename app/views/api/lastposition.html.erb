@@ -1,0 +1,73 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>Последняя позиция для drivers</title>
+  <script src="/javascripts/jquery-2.1.3.min.js"></script>
+  <script src="/osm/OpenLayers.js"></script>
+  
+  <link rel="stylesheet" href="/stylesheets/style.css" type="text/css">
+  <script src="http://www.openlayers.org/api/OpenLayers.js"></script>
+  <script src="/javascripts/osm-marker-popup_2.js"></script>
+  
+  <script>
+    var lonlat = undefined;
+    var markers = undefined;
+    var icon = undefined;
+    var updateinterval = 15000;
+    var zoom = 14;
+    var lonlatcenter = new OpenLayers.LonLat( 40.12489558, 45.85340927).transform(
+      new OpenLayers.Projection("EPSG:4326"), new OpenLayers.Projection("EPSG:900913"));
+    var coords =  new Array(<%= @coords.html_safe %> );
+    var map;
+    var lat = 0;
+    var lon = 0;
+    
+    function init() {
+      var mapnik = new OpenLayers.Layer.OSM();
+      map = new OpenLayers.Map("mapdiv");
+      map.addLayer(mapnik);
+      markers = new OpenLayers.Layer.Markers( "Markers" );
+      map.addLayer(markers);
+      for (var i = 0; i < coords.length; i++) {
+        lonlat = new OpenLayers.LonLat( coords[i].lon, coords[i].lat).transform( 
+          new OpenLayers.Projection("EPSG:4326"), 
+          new OpenLayers.Projection("EPSG:900913") 
+        );
+        icon = new OpenLayers.Icon('/img/'+coords[i].icon);
+        markers.addMarker(new OpenLayers.Marker(lonlat, icon));
+      }
+      map.setCenter(lonlatcenter, zoom);
+    }
+
+    function init2() {
+      var overlay = new OpenLayers.Layer.Vector('Overlay', {
+        styleMap: new OpenLayers.StyleMap({
+          externalGraphic: '/img/marker.png',
+          graphicWidth: 20, graphicHeight: 24, graphicYOffset: -24,
+          title: 'tooltip'
+        })
+      });
+      var lon=coords[0].lon;
+      var lat=coords[0].lat;
+      var myLocation = new OpenLayers.Geometry.Point(lon,lat).transform('EPSG:4326', 'EPSG:3857');
+      overlay.addFeatures([ new OpenLayers.Feature.Vector(myLocation, {tooltip: 'OpenLayers'}) ]);
+      map = new OpenLayers.Map({
+        div: "mapdiv", projection: "EPSG:3857",
+        layers: [new OpenLayers.Layer.OSM(), overlay],
+        center: myLocation.getBounds().getCenterLonLat(), zoom: 16
+      });
+    }
+  </script>
+  <style>
+    #mapdiv { width:98vw; height:97vh; }
+    div.olControlAttribution { bottom:3px; }
+  </style>
+</head>
+<body onload="init2();">
+<p id="notice"><%= notice %></p>
+<div id="mapdiv"></div>
+</body>
+</html>
