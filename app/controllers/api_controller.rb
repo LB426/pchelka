@@ -524,6 +524,32 @@ class ApiController < ApplicationController
     render :json => res
   end
 
+  def lastposmap
+    @user = User.authenticate(params[:login], params[:password])
+    if @user
+      @users = User.all
+      @coordinates = []
+      @users.each do |user|
+        last_coord = Track.where(:user_id => user.id).last
+        if last_coord
+          icon = "marker.png"
+          if user.login =~ /driver/
+            m = user.login.scan(/(\d{1,3})$/)
+            icon = "#{m[0][0]}.png"
+          end
+          if "#{last_coord.lat}" != "" && "#{last_coord.lon}" != ""
+            driver = "{icon: \"#{icon}\", lat: \"#{last_coord.lat}\", lon: \"#{last_coord.lon}\"}"
+            @coordinates << driver
+          end
+        end
+      end
+      @coords = @coordinates.join(",")
+      logger.debug "#{@coords}"
+    else
+    end
+    render :layout => false, :file => 'api/lastposition.html.erb'
+  end
+
 private
 
   def send_ref

@@ -1,5 +1,7 @@
 Bee2::Application.routes.draw do
 
+  get "api/:login/:password/lastposmap" => 'api#lastposmap', :as => 'api_lastposmap'
+
   get "api/:login/:password/taximeter" => 'api#taximeter', :as => 'api_taximeter'
 
   post 'user/:id/settings/taximeter/update' => 'user#update_settings_taximeter', :as => 'user_update_settings_taximeter'

@@ -61,3 +61,5 @@ Order update<br>
 <%= link_to "Получить последние координаты ВСЕХ машин", api_getlastdrivercoord_path(current_user.login, current_user.password) %>
 <hr>
 <%= link_to "Считать таксометр", api_taximeter_path(current_user.login, current_user.password) %>
+<hr>
+<%= link_to "Последние позиции для драйверов", api_lastposmap_path(current_user.login, current_user.password) %>
