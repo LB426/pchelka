@@ -36,6 +36,7 @@ class UserController < ApplicationController
                     "cost_km_city" => 0,
                     "cost_km_suburb" => 0,
                     "cost_km_intercity" => 0,
+                    "cost_km_n1" => 0,
                     "cost_stopping" => 0,
                     "cost_passenger_boarding_day" => 0,
                     "cost_passenger_boarding_night" => 0,
@@ -49,6 +50,7 @@ class UserController < ApplicationController
     @cost_km_city = @taximeter["cost_km_city"]
     @cost_km_suburb = @taximeter["cost_km_suburb"]
     @cost_km_intercity = @taximeter["cost_km_intercity"]
+    @cost_km_n1 = @taximeter["cost_km_n1"]
     @cost_stopping = @taximeter["cost_stopping"]
     @cost_passenger_boarding_day = @taximeter["cost_passenger_boarding_day"]
     @cost_passenger_boarding_night = @taximeter["cost_passenger_boarding_night"]
@@ -62,6 +64,7 @@ class UserController < ApplicationController
                   "cost_km_city" => params[:cost_km_city],
                   "cost_km_suburb" => params[:cost_km_suburb],
                   "cost_km_intercity" => params[:cost_km_intercity],
+                  "cost_km_n1" => params[:cost_km_n1],
                   "cost_stopping" => params[:cost_stopping],
                   "cost_passenger_boarding_day" => params[:cost_passenger_boarding_day],
                   "cost_passenger_boarding_night" => params[:cost_passenger_boarding_night],

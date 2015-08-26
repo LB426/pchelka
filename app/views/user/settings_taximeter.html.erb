@@ -1,4 +1,4 @@
-<h3>Настройка таксометра<h3>
+<h3>Настройка таксометра : <%= @user.login %><h3>
 
 <%= form_tag(user_update_settings_taximeter_path(@user), method: "post") do %>
   <p>
@@ -10,8 +10,12 @@
     <%= text_field_tag(:cost_km_suburb, @cost_km_suburb) %>
   </p>
   <p>
-    <%= label_tag(:cost_km_intercity, "Стоимость #{@user.monetary_unit}/км межгород:") %>
+    <%= label_tag(:cost_km_intercity, "Стоимость #{@user.monetary_unit}/км район:") %>
     <%= text_field_tag(:cost_km_intercity, @cost_km_intercity) %>
+  </p>
+  <p>
+    <%= label_tag(:cost_km_n1, "Стоимость #{@user.monetary_unit}/км межгород:") %>
+    <%= text_field_tag(:cost_km_n1, @cost_km_n1) %>
   </p>
   <p>
     <%= label_tag(:cost_stopping, "Стоимость остановки по просьбе пассажира, #{@user.monetary_unit} :") %>

@@ -511,6 +511,7 @@ class ApiController < ApplicationController
                             'cost_km_city' => taximeter["cost_km_city"],
                             'cost_km_suburb' => taximeter["cost_km_suburb"],
                             'cost_km_intercity' => taximeter["cost_km_intercity"],
+                            'cost_km_n1' => taximeter["cost_km_n1"],
                             'cost_stopping' => taximeter["cost_stopping"],
                             'cost_passenger_boarding_day' => taximeter["cost_passenger_boarding_day"],
                             'cost_passenger_boarding_night' => taximeter["cost_passenger_boarding_night"],
