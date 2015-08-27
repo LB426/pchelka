@@ -63,3 +63,13 @@ Order update<br>
 <%= link_to "Считать таксометр", api_taximeter_path(current_user.login, current_user.password) %>
 <hr>
 <%= link_to "Последние позиции для драйверов", api_lastposmap_path(current_user.login, current_user.password) %>
+<hr>
+<%= form_tag(api_smsdrivergotorder_path(current_user.login,current_user.password), method: :post, authenticity_token: false) do -%>
+	Номер заказа <%= text_field_tag 'nozak', '1001' %><br>
+	<%= submit_tag 'Послать SMS - водитель принял заказ' %>
+<% end %>
+<hr>
+<%= form_tag(api_smsdriverarrived_path(current_user.login,current_user.password), method: :post, authenticity_token: false) do -%>
+	Номер заказа <%= text_field_tag 'nozak', '1001' %><br>
+	<%= submit_tag 'Послать SMS - водитель прибыл на место заказа' %>
+<% end %>

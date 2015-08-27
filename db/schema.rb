@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150702124803) do
+ActiveRecord::Schema.define(version: 20150827141848) do
 
   create_table "abonenty", id: false, force: :cascade do |t|
     t.integer "num",        limit: 4
@@ -187,6 +187,15 @@ ActiveRecord::Schema.define(version: 20150702124803) do
     t.string   "name",       limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
+  end
+
+  create_table "smsmsgs", force: :cascade do |t|
+    t.integer  "nozak",      limit: 4
+    t.string   "notel",      limit: 255
+    t.string   "txtsms",     limit: 255
+    t.integer  "sent",       limit: 4
+    t.datetime "created_at",             null: false
+    t.datetime "updated_at",             null: false
   end
 
   create_table "streets", id: false, force: :cascade do |t|

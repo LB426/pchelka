@@ -1,13 +1,17 @@
 require 'net/http'
 
 class ApiController < ApplicationController
-  protect_from_forgery :except => [ :order_update, 
+  protect_from_forgery :except => [ 
+                                    :order_update, 
                                     :push_in_queue, 
                                     :order_destroy, 
                                     :state_update, 
                                     :dispreg,
                                     :caronorder,
-                                    :zvonkiupd ]
+                                    :zvonkiupd,
+                                    :smsdrivergotorder,
+                                    :smsdriverarrived
+                                  ]
   #если раскомментировать то все параметры запросов будут писаться в таблицу log
   #before_filter :write_to_log
   
@@ -549,6 +553,54 @@ class ApiController < ApplicationController
     else
     end
     render :layout => false, :file => 'api/lastposition.html.erb'
+  end
+
+  def smsdriverarrived
+    res = { :error => "none", :result => nil }
+    @user = User.authenticate(params[:login], params[:password])
+    if @user
+      nozak = params[:nozak]
+      order = Zakazi.where(:zakaz => nozak)
+      sms = Smsmsg.new
+      sms.nozak = nozak
+      if order.size != 0
+        sms.notel = order[0].telefon
+        sms.txtsms = "Водитель такси Пчёлка прибыл на ваш заказ номер #{nozak}"
+        sms.sent = 0
+        if !sms.save
+          res = { :error => "ERROR: write sms date in DB ", :result => nil }
+        end
+      else
+        res = { :error => "ERROR: zakaz not found #{nozak}", :result => nil }
+      end
+    else
+      res = { :error => "ERROR: Login or password incorrect", :result => nil }
+    end
+    render :json => res
+  end
+
+  def smsdrivergotorder
+    res = { :error => "none", :result => nil }
+    @user = User.authenticate(params[:login], params[:password])
+    if @user
+      nozak = params[:nozak]
+      order = Zakazi.where(:zakaz => nozak)
+      if order.size != 0
+        sms = Smsmsg.new
+        sms.nozak = nozak
+        sms.notel = order[0].telefon
+        sms.txtsms = "Водитель такси Пчёлка выехал на ваш заказ номер #{nozak}"
+        sms.sent = 0
+        if !sms.save
+          res = { :error => "ERROR: write sms date in DB ", :result => nil }
+        end
+      else
+        res = { :error => "ERROR: zakaz not found #{nozak}", :result => nil }
+      end
+    else
+      res = { :error => "ERROR: Login or password incorrect", :result => nil }
+    end
+    render :json => res
   end
 
 private

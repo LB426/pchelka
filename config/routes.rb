@@ -1,5 +1,8 @@
 Bee2::Application.routes.draw do
 
+  post "api/:login/:password/smsdrivergotorder" => 'api#smsdrivergotorder', :as => 'api_smsdrivergotorder'
+  post "api/:login/:password/smsdriverarrived" => 'api#smsdriverarrived', :as => 'api_smsdriverarrived'
+
   get "api/:login/:password/lastposmap" => 'api#lastposmap', :as => 'api_lastposmap'
 
   get "api/:login/:password/taximeter" => 'api#taximeter', :as => 'api_taximeter'
