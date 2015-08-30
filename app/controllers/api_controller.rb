@@ -91,7 +91,8 @@ class ApiController < ApplicationController
                               'tim' => order[0]['tim'],
                               'car' => order[0]['car'],
                               'uvedomlen' => order[0]['uvedomlen'],
-                              'memo' => order[0]['memo']
+                              'memo' => order[0]['memo'],
+                              'predvar' => order[0]['predvar']
                             }
               }
         render json: res
