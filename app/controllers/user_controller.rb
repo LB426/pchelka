@@ -18,6 +18,7 @@ class UserController < ApplicationController
                       login: params[:login], 
                       password: params[:password],
                       car: params[:car],
+                      cardesc: params[:cardesc],
                       group: params[:group],
                       monetary_unit: params[:monetary_unit],
                       monetary_credit: params[:monetary_credit]

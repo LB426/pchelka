@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150827141848) do
+ActiveRecord::Schema.define(version: 20150916132127) do
 
   create_table "abonenty", id: false, force: :cascade do |t|
     t.integer "num",        limit: 4
@@ -222,6 +222,7 @@ ActiveRecord::Schema.define(version: 20150827141848) do
     t.text     "settings",        limit: 65535
     t.string   "monetary_unit",   limit: 255,   default: "руб"
     t.integer  "monetary_credit", limit: 4,     default: 0
+    t.string   "cardesc",         limit: 255
   end
 
   create_table "zakazi", id: false, force: :cascade do |t|

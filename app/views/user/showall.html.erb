@@ -30,6 +30,7 @@
       <th>Last ALARM</th>
       <th>Settings</th>
       <th>Кредит</th>
+      <th>Описание машины</th>
     </tr
   </thead>
   <tbody>
@@ -46,6 +47,7 @@
       <td><%= user.alarm %></td>
       <td><%= link_to "Таксометр", user_show_settings_taximeter_path(user)  %></td>
       <td><%= user.monetary_credit %></td>
+      <td><%= user.cardesc %></td>
     </tr>
     <% end %>
   </tbody>

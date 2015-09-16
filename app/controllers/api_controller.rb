@@ -566,7 +566,7 @@ class ApiController < ApplicationController
       sms.nozak = nozak
       if order.size != 0
         sms.notel = order[0].telefon
-        sms.txtsms = "Водитель такси Пчёлка прибыл на ваш заказ номер #{nozak}"
+        sms.txtsms = "Машина #{@user.cardesc} такси Пчёлка прибыла на ваш заказ"
         sms.sent = 0
         if !sms.save
           res = { :error => "ERROR: write sms date in DB ", :result => nil }
@@ -590,7 +590,7 @@ class ApiController < ApplicationController
         sms = Smsmsg.new
         sms.nozak = nozak
         sms.notel = order[0].telefon
-        sms.txtsms = "Водитель такси Пчёлка выехал на ваш заказ номер #{nozak}"
+        sms.txtsms = "Машина #{@user.cardesc} такси Пчёлка выехала на ваш заказ"
         sms.sent = 0
         if !sms.save
           res = { :error => "ERROR: write sms date in DB ", :result => nil }

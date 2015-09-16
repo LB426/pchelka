@@ -2,10 +2,10 @@ source 'https://rubygems.org'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 # old gem 'rails', '4.0.0'
-gem 'rails', '4.2.3'
+gem 'rails', '4.2.4'
 
 # Use mysql as the database for Active Record
-gem 'mysql2'
+gem 'mysql2', '~> 0.3.18'
 gem 'quiet_assets', :group => :development
 
 # Use CoffeeScript for .js.coffee assets and views
