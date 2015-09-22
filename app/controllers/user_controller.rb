@@ -10,6 +10,7 @@ class UserController < ApplicationController
 
   def new
     @user = User.new
+    @password = pwgen(10)
   end
 
   def create
@@ -192,6 +193,15 @@ class UserController < ApplicationController
       end
     end
     redirect_to user_index_path, notice: "Кредитная политика установлена"
+  end
+
+  def pwgen(len = 8)
+    #rand_password=('0'..'z').to_a.shuffle.first(8).join
+    #chars = ("a".."z").to_a + ("A".."Z").to_a + ("0".."9").to_a
+    chars = ("a".."z").to_a + ("0".."9").to_a
+    newpass = ""
+    1.upto(len) { |i| newpass << chars[rand(chars.size-1)] }
+    return newpass
   end
 
 end
