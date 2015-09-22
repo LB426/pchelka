@@ -1,0 +1,19 @@
+<h3>Изменить настройку денежной единицы по умолчанию<h3>
+<hr>
+<%= form_tag(update_defset_monetary_unit_path, method: "post") do %>
+  <p>
+    <%= label_tag(:name, "Название:") %>
+    <%= text_field_tag(:name, @name) %>
+  </p>
+  <p>
+    <%= label_tag(:value, "Единица измерения:") %>
+    <%= text_field_tag(:value, @value) %>
+  </p>
+  <p>
+    <%= submit_tag("Изменить") %>
+  </p>
+<% end %>
+<hr>
+<%= form_tag(destroy_defset_monetary_unit_path, method: "post") do %>
+  <%= submit_tag("Удалить") %>
+<% end %>

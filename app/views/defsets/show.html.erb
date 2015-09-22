@@ -1,0 +1,14 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Name:</strong>
+  <%= @defset.name %>
+</p>
+
+<p>
+  <strong>Value:</strong>
+  <%= @defset.value %>
+</p>
+
+<%= link_to 'Edit', edit_defset_path(@defset) %> |
+<%= link_to 'Back', defsets_path %>

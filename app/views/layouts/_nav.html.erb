@@ -7,6 +7,9 @@
     <%= link_to "Трэки", tracks_path %> |
     <%= link_to "Последнее место", all_last_point_path %> |
     <%= link_to "Пользователи", user_index_path %>
+    <% if current_user_admin? %>
+      | <%= link_to "Настройки по умолчанию", showall_defsets_path %>
+    <% end %>
   <% else %>
     <%= link_to "Signup", "sign_up_path" %> or
     <%= link_to "login", login_path %>

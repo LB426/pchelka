@@ -1,5 +1,27 @@
 Bee2::Application.routes.draw do
 
+  post 'defset/credit-policy/destroy' => 'defsets#destroy_credit_policy', :as => 'destroy_defset_credit_policy'
+  post 'defset/credit-policy/update'  => 'defsets#update_credit_policy',  :as => 'update_defset_credit_policy'
+  get  'defset/credit-policy/edit'    => 'defsets#edit_credit_policy',    :as => 'edit_defset_credit_policy'
+  post 'defset/credit-policy/create'  => 'defsets#create_credit_policy',  :as => 'create_defset_credit_policy'
+  get  'defset/credit-policy/new'     => 'defsets#new_credit_policy',     :as => 'new_defset_credit_policy'
+
+  post 'defset/taximeter/destroy' => 'defsets#destroy_taximeter', :as => 'destroy_defset_taximeter'
+  post 'defset/taximeter/update'  => 'defsets#update_taximeter',  :as => 'update_defset_taximeter'
+  get  'defset/taximeter/edit'    => 'defsets#edit_taximeter',    :as => 'edit_defset_taximeter'
+  post 'defset/taximeter/create'  => 'defsets#create_taximeter',  :as => 'create_defset_taximeter'
+  get  'defset/taximeter/new'     => 'defsets#new_taximeter',     :as => 'new_defset_taximeter'
+
+  post 'defset/monetary-unit/destroy' => 'defsets#destroy_monetary_unit', :as => 'destroy_defset_monetary_unit'
+  post 'defset/monetary-unit/update'  => 'defsets#update_monetary_unit',  :as => 'update_defset_monetary_unit'
+  get  'defset/monetary-unit/edit'    => 'defsets#edit_monetary_unit',    :as => 'edit_defset_monetary_unit'
+  post 'defset/monetary-unit/create'  => 'defsets#create_monetary_unit',  :as => 'create_defset_monetary_unit'
+  get  'defset/monetary-unit/new'     => 'defsets#new_monetary_unit',     :as => 'new_defset_monetary_unit'
+  
+  get 'defset/showall' => 'defsets#index', :as => 'showall_defsets'
+
+  #resources :defsets
+
   post "api/:login/:password/smsdrivergotorder" => 'api#smsdrivergotorder', :as => 'api_smsdrivergotorder'
   post "api/:login/:password/smsdriverarrived" => 'api#smsdriverarrived', :as => 'api_smsdriverarrived'
 
@@ -7,8 +29,22 @@ Bee2::Application.routes.draw do
 
   get "api/:login/:password/taximeter" => 'api#taximeter', :as => 'api_taximeter'
 
+  post 'user/:id/destroy' => 'user#destroy', :as => 'user_destroy'
+  post 'user/create' => 'user#create', :as => 'user_create'
+  get 'user/new' => 'user#new', :as => 'user_new'
+
+  post 'user/settings/credit-policy/massupdate' => 'user#mass_update_settings_credit_policy', :as => 'mupdate_creditpol_regdrv'
+  get  'user/settings/credit-policy/edit/mass' => 'user#mass_edit_settings_credit_policy_reg_driver', :as => 'medit_creditpol_regdrv'
+
+  post 'user/:id/settings/credit-policy/update' => 'user#update_settings_credit_policy', :as => 'update_user_settings_credit_policy'
+  get  'user/:id/edit/settings/credit-policy'   => 'user#edit_settings_credit_policy',   :as => 'edit_user_settings_credit_policy'
+  
+  post 'user/:id/settings/taximeter/massupdate' => 'user#mass_update_settings_taximeter', :as => 'user_mass_update_settings_taximeter'
+  get 'user/mass-assign-taximeter-for-regular-driver' => 'user#mass_assign_taximeret_reg_driver', :as => 'user_mass_assign_taximeret_reg_driver'
+
   post 'user/:id/settings/taximeter/update' => 'user#update_settings_taximeter', :as => 'user_update_settings_taximeter'
   get 'user/:id/settings/taximeter' => 'user#settings_taximeter', :as => 'user_show_settings_taximeter'
+  
   post 'user/:id/update' => 'user#update', :as => 'user_update'
   get 'user/:id/edit' => 'user#edit', :as => 'user_edit'
   get 'user/showall'

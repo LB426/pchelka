@@ -25,3 +25,4 @@
 .DS_Store
 config/database.yml
 config/unicorn.rb
+bin/decregdrv24h.sh

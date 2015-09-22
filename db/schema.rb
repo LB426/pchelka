@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150916132127) do
+ActiveRecord::Schema.define(version: 20150921134535) do
 
   create_table "abonenty", id: false, force: :cascade do |t|
     t.integer "num",        limit: 4
@@ -153,6 +153,13 @@ ActiveRecord::Schema.define(version: 20150916132127) do
     t.string  "mesto", limit: 10
     t.integer "row",   limit: 4
     t.integer "col",   limit: 4
+  end
+
+  create_table "defsets", force: :cascade do |t|
+    t.string   "name",       limit: 255
+    t.text     "value",      limit: 65535
+    t.datetime "created_at",               null: false
+    t.datetime "updated_at",               null: false
   end
 
   create_table "disp", id: false, force: :cascade do |t|

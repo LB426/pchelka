@@ -1,0 +1,18 @@
+<hr>
+<h3>Управление кредитной политикой</h3>
+<hr>
+<p>Пользователь: <strong><%= @user.login %></strong></p>
+<%= form_tag(update_user_settings_credit_policy_path(@user), method: "post") do %>
+  <p>
+    Метод снятия денег с кредитного счёта
+    <%= select_tag :method, options_for_select(@methods, @method) %>
+
+  </p>
+  <p>
+    <%= label_tag(:cost_per_order, "Снимаемая сумма, #{@user.monetary_unit} :") %>
+    <%= text_field_tag(:cost, @cost) %>
+  </p>
+  <p>
+    <%= submit_tag("Установить") %>
+  </p>
+<% end %>

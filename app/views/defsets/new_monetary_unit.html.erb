@@ -1,0 +1,15 @@
+<h3>Создать настройку денежной единицы по умолчанию<h3>
+<hr>
+<%= form_tag(create_defset_monetary_unit_path, method: "post") do %>
+  <p>
+    <%= label_tag(:name, "Название:") %>
+    <%= text_field_tag(:name, "денежная единица") %>
+  </p>
+  <p>
+    <%= label_tag(:value, "Единица измерения:") %>
+    <%= text_field_tag(:value, "руб") %>
+  </p>
+  <p>
+    <%= submit_tag("Создать") %>
+  </p>
+<% end %>
