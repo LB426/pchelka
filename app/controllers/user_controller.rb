@@ -51,10 +51,10 @@ class UserController < ApplicationController
   end
 
   def destroy
-    if current_user && current_user.group =~ /admin/
+    @user = User.find(params[:id])
+    if current_user.id == @user.id 
       redirect_to user_showall_path, notice: "Попытка удалить АДМИНА!!! и самого себя - это ПЛОХО!!! АЛАРМ!!! ЧТО ТЫ ДЕЛАЕШЬ!!!" 
     else
-      @user = User.find(params[:id])
       @user.destroy
       redirect_to user_showall_path, notice: "Удалён пользователь #{@user.login}" 
     end
