@@ -173,7 +173,7 @@ class UserController < ApplicationController
                   "cost" => params[:cost] }
     @user.settings["creditpol"] = creditpol
     @user.save
-    redirect_to edit_user_settings_credit_policy_path(@user), notice: "Кредитная политика обновлена"
+    redirect_to user_showall_path, notice: "Метод расчёта для #{@user.login} обновлён"
   end
 
   def mass_edit_settings_credit_policy_reg_driver
@@ -202,6 +202,24 @@ class UserController < ApplicationController
     newpass = ""
     1.upto(len) { |i| newpass << chars[rand(chars.size-1)] }
     return newpass
+  end
+
+  def edit_score
+    @user = User.find(params[:id])
+  end
+
+  def update_score
+    @user = User.find(params[:id])
+    if params[:monetary_credit].empty?
+      redirect_to user_showall_path, :flash => { :error => "Счёт водителя НЕ изменён, Вы не ввели количество рублей для внесения на счёт" }
+    else
+      if params[:monetary_credit].to_i >= 0 
+        @user.increasecredit(params[:monetary_credit].to_i)
+        redirect_to user_showall_path, notice: "Счёт водителя #{@user.login} изменён"
+      else
+        redirect_to user_showall_path, :flash => { :error => "Счёт водителя НЕ изменён, Вы ввели отрицательное количество рублей для внесения на счёт" }
+      end
+    end
   end
 
 end

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150921134535) do
+ActiveRecord::Schema.define(version: 20150924135622) do
 
   create_table "abonenty", id: false, force: :cascade do |t|
     t.integer "num",        limit: 4
@@ -169,6 +169,13 @@ ActiveRecord::Schema.define(version: 20150921134535) do
     t.integer "working", limit: 4
   end
 
+  create_table "ledgers", force: :cascade do |t|
+    t.string   "name",        limit: 255, null: false
+    t.integer  "amount",      limit: 4,   null: false
+    t.string   "transaction", limit: 255, null: false
+    t.datetime "created_at",              null: false
+  end
+
   create_table "logs", force: :cascade do |t|
     t.string   "user",       limit: 255
     t.string   "ip",         limit: 255
@@ -230,6 +237,7 @@ ActiveRecord::Schema.define(version: 20150921134535) do
     t.string   "monetary_unit",   limit: 255,   default: "руб"
     t.integer  "monetary_credit", limit: 4,     default: 0
     t.string   "cardesc",         limit: 255
+    t.datetime "tcredup"
   end
 
   create_table "zakazi", id: false, force: :cascade do |t|

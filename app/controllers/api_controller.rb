@@ -1,3 +1,4 @@
+# coding: utf-8
 require 'net/http'
 
 class ApiController < ApplicationController
@@ -123,6 +124,9 @@ class ApiController < ApplicationController
         order = Zakazi.where("car = #{@user.car}")
         if order.size == 1
           Zakazi.where("car = #{@user.car}").limit(1).update_all(uvedomlen: params[:uvedomlen])
+          if params[:uvedomlen] == "2"
+              @user.reducecredit
+          end
           res = { :error => "none", :result => "row updated: 1" }
           render :json => res
         else

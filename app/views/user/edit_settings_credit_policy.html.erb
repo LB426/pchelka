@@ -1,10 +1,9 @@
 <hr>
-<h3>Управление кредитной политикой</h3>
-<hr>
-<p>Пользователь: <strong><%= @user.login %></strong></p>
+<h3>Управление способом снятия денег со счёта водителя</h3>
+<p>Водитель: <strong><%= @user.login %></strong></p>
 <%= form_tag(update_user_settings_credit_policy_path(@user), method: "post") do %>
   <p>
-    Метод снятия денег с кредитного счёта
+    Метод снятия денег со счёта
     <%= select_tag :method, options_for_select(@methods, @method) %>
 
   </p>

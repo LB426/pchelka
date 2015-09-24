@@ -15,8 +15,11 @@
   
   <%= render 'layouts/nav' %>
 
+<style>
+.flash_error { text-align: center; background: #FF0000; width: 50%; margin:0 auto; padding: 10px;}
+</style>
   <% flash.each do |name, msg| %>
-    <%= content_tag :div, msg, :id => "flash_#{name}" %>
+    <%= content_tag :div, msg, :class => "flash_#{name}" %>
   <% end %>
   
   <%= yield %>

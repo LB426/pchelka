@@ -4,9 +4,7 @@ namespace :pchelka do
     users = User.where("users.group = ?", "driver")
     if users.size > 0
       users.each do |user|
-        cost = user.settings["creditpol"]["cost"].to_i
-        user.monetary_credit -= cost
-        user.save
+        user.reducecredit
       end
     else
       puts "Regular driver not found\n"
@@ -18,8 +16,7 @@ namespace :pchelka do
     users = User.where("users.group = ?", "driver")
     if users.size > 0
       users.each do |user|
-         user.monetary_credit = 150
-         user.save
+         user.setcredit(150)
       end
     end
   end

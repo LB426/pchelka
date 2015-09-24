@@ -29,6 +29,9 @@ Bee2::Application.routes.draw do
 
   get "api/:login/:password/taximeter" => 'api#taximeter', :as => 'api_taximeter'
 
+  post 'user/:id/score/update' => 'user#update_score', :as => 'update_user_score'
+  get 'user/:id/score' => 'user#edit_score', :as => 'edit_user_score'
+
   post 'user/:id/destroy' => 'user#destroy', :as => 'user_destroy'
   post 'user/create' => 'user#create', :as => 'user_create'
   get 'user/new' => 'user#new', :as => 'user_new'
