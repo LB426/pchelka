@@ -5,7 +5,8 @@ class UserController < ApplicationController
   end
 
   def showall
-    @users = User.all
+   #@users = User.where("'group' = ?", "driver")
+   @users = User.where("users.group = ? OR users.group = ? OR users.group = ?", "driver", "bombila", "unavailable")
   end
 
   def new

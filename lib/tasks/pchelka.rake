@@ -7,7 +7,7 @@ namespace :pchelka do
         mc1 = user.monetary_credit
         user.reducecredit
         if mc1 != user.monetary_credit
-          Ledger.create(origin: current_user.login, recipient: user.login, amount: user.monetary_credit, operation: "test driver_monetary_credit_dec", when: Time.now)
+          Ledger.create(origin: "таймер", recipient: user.login, amount: user.monetary_credit, operation: "снятие средств со счёта 1 раз в 24 часа", when: Time.now)
         end
       end
     else
