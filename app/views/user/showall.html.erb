@@ -10,9 +10,9 @@
 .hoverTable td { 
   padding:4px; border:#4e95f4 1px solid;text-align: center;
 }
-td.bombila { 
-  padding:4px; border:#4e95f4 1px solid;text-align: center;background: #EE82EE;
-}
+td.bombila {padding:4px; border:#4e95f4 1px solid;text-align: center;background: #EE82EE;}
+td.unavailable {padding:4px; border:#4e95f4 1px solid;text-align: center;background: #34495E;}
+td.unavailable a {color:#FFF;}
 .hoverTable tr {
   background: #FFFFFF;
 }
@@ -33,7 +33,7 @@ a.score { text-decoration: none; }
       <th>Таксометр</th>
       <th>Счёт</th>
       <th>Расчёт</th>
-      <th>Время счёта</th>
+      <th>Время пополнения счёта</th>
       <th>Создан</th>
       <th>Изменён</th>
       <th>&nbsp</th>
@@ -42,11 +42,7 @@ a.score { text-decoration: none; }
   <tbody>
     <% @users.each do |user| %>
     <tr>
-      <% if user.group =~ /bombila/ %>
-        <td class="bombila"><%= link_to user.login, user_edit_path(user) %></td>
-      <% else %>
-        <td><%= link_to user.login, user_edit_path(user) %></td>
-      <% end %>
+      <td class="<%= user.group %>"><%= link_to user.login, user_edit_path(user) %></td>
       <td><%= user.car %></td>
       <td><%= user.cardesc %></td>
       <td><%= link_to "Таксометр", user_show_settings_taximeter_path(user)  %></td>

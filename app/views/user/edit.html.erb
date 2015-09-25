@@ -19,15 +19,11 @@
   </p>
   <p>
     <%= label_tag(:group, "Группа:") %>
-    <%= text_field_tag(:group, @user.group) %>
+    <%= select_tag :group, options_for_select(@groups, @user.group) %>
   </p>
   <p>
     <%= label_tag(:monetary_unit, "Денежная единица:") %>
     <%= text_field_tag(:monetary_unit, @user.monetary_unit) %>
-  </p>
-  <p>
-    <%= label_tag(:monetary_credit, "Кредит:") %>
-    <%= text_field_tag(:monetary_credit, @user.monetary_credit) %>
   </p>
   <p>
     <%= submit_tag("Применить") %>

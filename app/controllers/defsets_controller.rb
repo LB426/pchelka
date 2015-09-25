@@ -251,6 +251,63 @@ class DefsetsController < ApplicationController
     redirect_to showall_defsets_path, notice: "Настройки кредитной политики по умолчанию удалены"
   end
 
+  def new_time_dec_score_regdrv
+    @defset = Defset.find_by_name("время снятия средств со счёта для регулярного водителя")
+    if @defset == nil
+    else
+      flash[:attn] = 'Настройка <strong>время снятия средств со счёта для регулярного водителя</strong> уже существует'.html_safe
+      redirect_to edit_defset_time_dec_score_regdrv_path
+    end
+  end
+
+  def create_time_dec_score_regdrv
+    @defset = Defset.find_by_name("время снятия средств со счёта для регулярного водителя")
+    if @defset == nil
+      @defset = Defset.new
+      @defset.name = params[:name]
+      @defset.value = params[:value]
+      if @defset.save
+        flash[:notice] = 'Настройка <strong>время снятия средств со счёта для регулярного водителя</strong> создана успешено'.html_safe
+        redirect_to showall_defsets_path
+      else
+        flash[:error] = 'Создание настройки "время снятия средств со счёта для регулярного водителя" НЕ удалась.'
+        redirect_to showall_defsets_path
+      end
+    else
+      flash[:error] = 'Настройка "время снятия средств со счёта для регулярного водителя" уже существует.'
+      redirect_to showall_defsets_path
+    end
+  end
+
+  def edit_time_dec_score_regdrv
+    @defset = Defset.find_by_name("время снятия средств со счёта для регулярного водителя")
+  end
+
+  def update_time_dec_score_regdrv
+    @defset = Defset.find_by_name("время снятия средств со счёта для регулярного водителя")
+    if @defset != nil
+      @defset.name = params[:name]
+      @defset.value = params[:value]
+      if @defset.save
+        flash[:notice] = 'Настройка <strong>время снятия средств со счёта для регулярного водителя</strong> изменена успешено'.html_safe
+        redirect_to showall_defsets_path
+      else
+        flash[:error] = 'Изменение настройки "время снятия средств со счёта для регулярного водителя" НЕ удалась.'
+        redirect_to showall_defsets_path
+      end
+    else
+      flash[:error] = 'Настройка "время снятия средств со счёта для регулярного водителя" НЕ существует.'
+      redirect_to showall_defsets_path
+    end
+  end
+
+  def destroy_time_dec_score_regdrv
+    @defset = Defset.find_by_name("время снятия средств со счёта для регулярного водителя")
+    @defset.destroy
+    flash[:notice] = 'Настройка <strong>время снятия средств со счёта для регулярного водителя</strong> удалена успешено'.html_safe
+    redirect_to showall_defsets_path
+  end
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_defset

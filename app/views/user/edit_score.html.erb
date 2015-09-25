@@ -7,7 +7,7 @@
     На счету: <strong><%= @user.monetary_credit %></strong> <%= @user.monetary_unit %>.
   </p>
   <p>
-    Пополнить счёт на: <%= text_field_tag(:monetary_credit ) %> <%= @user.monetary_unit %>.
+    Пополнить счёт на: <%= text_field_tag(:monetary_credit, nil, :autocomplete => "off" ) %> <%= @user.monetary_unit %>.
   </p>
   <p>
     <%= submit_tag("Пополнить") %>

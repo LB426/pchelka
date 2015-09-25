@@ -31,6 +31,9 @@ class UserController < ApplicationController
 
   def edit
     @user = User.find(params[:id])
+    @groups = [["постоянный водитель","driver"],
+               ["бомбила","bombila"],
+               ["недоступен","unavailable"]]
   end
 
   def update
@@ -42,13 +45,12 @@ class UserController < ApplicationController
                       cardesc: params[:cardesc],
                       group: params[:group],
                       monetary_unit: params[:monetary_unit],
-                      monetary_credit: params[:monetary_credit]
                     )
-      flash.now[:notice] = "Данные пользователя изменены"
+      flash[:notice] = "Данные пользователя <strong>#{@user.login}</strong> изменены успешено".html_safe
     else
-      flash.now[:error] = "Ошибка - данные пользователя изменить не удалось"
+      flash[:error] = 'Данные пользователя <strong>#{@user.login}</strong> НЕ изменены'.html_safe
     end
-    render :action => "edit"
+    redirect_to user_showall_path
   end
 
   def destroy
@@ -146,7 +148,6 @@ class UserController < ApplicationController
                 }
     users = User.where(group: 'driver')
     if users.size > 0
-      #User.where(group: 'regular driver').update_all(:settings => @user.settings)
       users.each do |user|
         user.settings["taximeter"] = taximeter
         user.save
@@ -215,10 +216,28 @@ class UserController < ApplicationController
     else
       if params[:monetary_credit].to_i >= 0 
         @user.increasecredit(params[:monetary_credit].to_i)
+        Ledger.create(origin: current_user.login, recipient: @user.login, amount: @user.monetary_credit, operation: "пополнение", when: Time.now)
         redirect_to user_showall_path, notice: "Счёт водителя #{@user.login} изменён"
       else
         redirect_to user_showall_path, :flash => { :error => "Счёт водителя НЕ изменён, Вы ввели отрицательное количество рублей для внесения на счёт" }
       end
+    end
+  end
+
+  def driver_monetary_credit_dec
+    users = User.where("users.group = ?", "driver")
+    if users.size > 0
+      users.each do |user|
+        mc1 = user.monetary_credit
+        user.reducecredit
+        if mc1 != user.monetary_credit
+          Ledger.create(origin: current_user.login, recipient: user.login, amount: user.monetary_credit, operation: "test driver_monetary_credit_dec", when: Time.now)
+        end
+      end
+      redirect_to user_showall_path, :flash => { :error => "Предпринята попытка массового уменьшения счёта" }
+    else
+      @result = "Regular driver not found\n"
+      redirect_to user_showall_path, :flash => { :error => "Счёт водителя НЕ изменён для всех" }
     end
   end
 

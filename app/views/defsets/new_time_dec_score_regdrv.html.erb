@@ -1,0 +1,16 @@
+<hr>
+<h3>Создать настройку по умолчанию времени снятия средств со счёта регулярного водителя<h3>
+<hr>
+<%= form_tag(create_defset_time_dec_score_regdrv_path, method: "post") do %>
+  <p>
+    <%= label_tag(:name, "Название:") %>
+    <%= text_field_tag(:name, "время снятия средств со счёта для регулярного водителя", :size => 55) %>
+  </p>
+  <p>
+    <%= label_tag(:value, "Период, часы:") %>
+    <%= text_field_tag(:value, "24") %>
+  </p>
+  <p>
+    <%= submit_tag("Создать") %>
+  </p>
+<% end %>

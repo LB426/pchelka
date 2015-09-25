@@ -1,5 +1,14 @@
 Bee2::Application.routes.draw do
 
+
+  get 'user/driver/monetary_credit/decrease' => 'user#driver_monetary_credit_dec', :as => 'driver_moncred_dec'
+
+  post 'defset/time/dec/score/driver/regular/destroy' => 'defsets#destroy_time_dec_score_regdrv', :as => 'destroy_defset_time_dec_score_regdrv' 
+  post 'defset/time/dec/score/driver/regular/update'  => 'defsets#update_time_dec_score_regdrv',  :as => 'update_defset_time_dec_score_regdrv' 
+  get  'defset/time/dec/score/driver/regular/edit'    => 'defsets#edit_time_dec_score_regdrv',    :as => 'edit_defset_time_dec_score_regdrv' 
+  post 'defset/time/dec/score/driver/regular/create'  => 'defsets#create_time_dec_score_regdrv',  :as => 'create_defset_time_dec_score_regdrv' 
+  get  'defset/time/dec/score/driver/regular/new'     => 'defsets#new_time_dec_score_regdrv',     :as => 'new_defset_time_dec_score_regdrv' 
+
   post 'defset/credit-policy/destroy' => 'defsets#destroy_credit_policy', :as => 'destroy_defset_credit_policy'
   post 'defset/credit-policy/update'  => 'defsets#update_credit_policy',  :as => 'update_defset_credit_policy'
   get  'defset/credit-policy/edit'    => 'defsets#edit_credit_policy',    :as => 'edit_defset_credit_policy'
@@ -18,7 +27,7 @@ Bee2::Application.routes.draw do
   post 'defset/monetary-unit/create'  => 'defsets#create_monetary_unit',  :as => 'create_defset_monetary_unit'
   get  'defset/monetary-unit/new'     => 'defsets#new_monetary_unit',     :as => 'new_defset_monetary_unit'
   
-  get 'defset/showall' => 'defsets#index', :as => 'showall_defsets'
+  get  'defset/showall' => 'defsets#index', :as => 'showall_defsets'
 
   #resources :defsets
 

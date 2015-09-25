@@ -17,6 +17,8 @@
 
 <style>
 .flash_error { text-align: center; background: #FF0000; width: 50%; margin:0 auto; padding: 10px;}
+.flash_notice { text-align: center; background: #AED6F1; width: 50%; margin:0 auto; padding: 10px;}
+.flash_attn { text-align: center; background: #ABEBC6; width: 50%; margin:0 auto; padding: 10px;}
 </style>
   <% flash.each do |name, msg| %>
     <%= content_tag :div, msg, :class => "flash_#{name}" %>

@@ -5,7 +5,6 @@
   <p>
     Метод снятия денег со счёта
     <%= select_tag :method, options_for_select(@methods, @method) %>
-
   </p>
   <p>
     <%= label_tag(:cost_per_order, "Снимаемая сумма, #{@user.monetary_unit} :") %>

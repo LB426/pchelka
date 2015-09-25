@@ -4,7 +4,11 @@ namespace :pchelka do
     users = User.where("users.group = ?", "driver")
     if users.size > 0
       users.each do |user|
+        mc1 = user.monetary_credit
         user.reducecredit
+        if mc1 != user.monetary_credit
+          Ledger.create(origin: current_user.login, recipient: user.login, amount: user.monetary_credit, operation: "test driver_monetary_credit_dec", when: Time.now)
+        end
       end
     else
       puts "Regular driver not found\n"
