@@ -103,6 +103,7 @@ GEM
     raindrops (0.15.0)
     rake (10.4.2)
     rdoc (4.2.0)
+      json (~> 1.4)
     ref (2.0.0)
     sdoc (0.4.1)
       json (~> 1.7, >= 1.7.7)
@@ -141,6 +142,3 @@ DEPENDENCIES
   therubyracer
   turbolinks
   unicorn
-
-BUNDLED WITH
-   1.10.6
