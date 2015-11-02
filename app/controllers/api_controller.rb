@@ -608,6 +608,23 @@ class ApiController < ApplicationController
     render :json => res
   end
 
+  def orders
+    res = { :error => "none", :result => nil }
+    @user = User.authenticate(params[:login], params[:password])
+    if @user
+      order = Zakazi.all.order(zakaz: :desc)
+      #order = Zakazi.all.order("zakaz DESC")
+      if order.size > 0
+        res = order
+      else
+        res = { :error => "ERROR: zakazi not found", :result => nil }
+      end
+    else
+      res = { :error => "ERROR: Login or password incorrect", :result => nil }
+    end
+    render :json => res
+  end
+  
 private
 
   def send_ref

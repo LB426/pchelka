@@ -75,3 +75,5 @@ Order update<br>
 <% end %>
 <hr>
 <%= link_to "Тест списания денег со счёта обычного водителя", driver_moncred_dec_path %>
+<hr>
+<%= link_to "Получить список заказов", api_orders_path(current_user.login,current_user.password) %>

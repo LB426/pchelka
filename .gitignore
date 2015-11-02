@@ -21,8 +21,10 @@
 # my
 *.swo
 *.swp
-.rvmrc
+.rvmrc*
 .DS_Store
 config/database.yml
 config/unicorn.rb
 bin/decregdrv24h.sh
+.projectile
+TAGS
