@@ -1,0 +1,20 @@
+<hr>
+<h3>Изменить настройку по умолчанию времени снятия средств со счёта регулярного водителя<h3>
+<hr>
+<%= form_tag(update_defset_time_dec_score_regdrv_path, method: "post") do %>
+  <p>
+    <%= label_tag(:name, "Название:") %>
+    <%= text_field_tag(:name, "время снятия средств со счёта для регулярного водителя", :size => 55) %>
+  </p>
+  <p>
+    <%= label_tag(:value, "Период, часы:") %>
+    <%= text_field_tag(:value, @defset.value) %>
+  </p>
+  <p>
+    <%= submit_tag("Изменить") %>
+  </p>
+<% end %>
+<hr>
+<%= form_tag(destroy_defset_time_dec_score_regdrv_path, method: "post") do %>
+  <%= submit_tag("Удалить") %>
+<% end %>

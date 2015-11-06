@@ -1,13 +1,20 @@
+# coding: utf-8
 require 'net/http'
 
 class ApiController < ApplicationController
-  protect_from_forgery :except => [ :order_update, 
+  protect_from_forgery :except => [ 
+                                    :order_update, 
                                     :push_in_queue, 
                                     :order_destroy, 
                                     :state_update, 
                                     :dispreg,
                                     :caronorder,
-                                    :zvonkiupd ]
+                                    :zvonkiupd,
+                                    :smsdrivergotorder,
+                                    :smsdriverarrived,
+                                    :orderaddcar,
+                                    :orderdelcar
+                                  ]
   #если раскомментировать то все параметры запросов будут писаться в таблицу log
   #before_filter :write_to_log
   
@@ -64,6 +71,7 @@ class ApiController < ApplicationController
   
   def test
   	current_user?
+    render :layout => 'application'
   end
 
   def order
@@ -86,7 +94,8 @@ class ApiController < ApplicationController
                               'tim' => order[0]['tim'],
                               'car' => order[0]['car'],
                               'uvedomlen' => order[0]['uvedomlen'],
-                              'memo' => order[0]['memo']
+                              'memo' => order[0]['memo'],
+                              'predvar' => order[0]['predvar']
                             }
               }
         render json: res
@@ -117,6 +126,9 @@ class ApiController < ApplicationController
         order = Zakazi.where("car = #{@user.car}")
         if order.size == 1
           Zakazi.where("car = #{@user.car}").limit(1).update_all(uvedomlen: params[:uvedomlen])
+          if params[:uvedomlen] == "2"
+              @user.reducecredit
+          end
           res = { :error => "none", :result => "row updated: 1" }
           render :json => res
         else
@@ -210,15 +222,6 @@ class ApiController < ApplicationController
           p[0].destroy
           p2 = PointQueue.new
           p2.point_id = params[:point_id]
-          ########################################################################
-          # для старой версии андроидного приложения
-          # unless params[:row].nil? 
-          #   p2.point_id = params[:row]
-          # end
-          # unless params['delzak'].nil?
-          #   Zakazi.where(:car => @user.car).delete_all if params['delzak'] == '1'
-          # end
-          ########################################################################
           p2.car = @user.car
           p2.state = params[:state]
           if p2.save
@@ -320,21 +323,6 @@ class ApiController < ApplicationController
     render :json => res
   end
 
-  def caronorder
-    res = { :error => "none", :result => nil }
-    @user = User.authenticate(params[:login], params[:password])
-    if @user
-      unless params[:order_id].nil? && params[:car].nil?
-        logger.debug "order_id=#{params[:order_id]} , car=#{params[:car]}"
-
-      else
-        res = { :error => "order_id or car is nil", :result => nil }
-      end
-    else
-      res = { :error => "Login or password incorrect", :result => nil }
-    end
-    render :json => res
-  end
 
   def zvonkiupd
     res = { :error => "none", :result => nil }
@@ -506,6 +494,158 @@ class ApiController < ApplicationController
       res = @coordinates unless @coordinates.size < 1
     else
       res = { :error => "ERROR: no drivers with car>0 in point_queues. api getlastdrivercoord.", :result => nil }
+    end
+    render :json => res
+  end
+
+  def taximeter
+    res = { :error => "none", :result => nil }
+    @user = User.authenticate(params[:login], params[:password])
+    if @user
+      taximeter = @user.settings["taximeter"]
+      res = { :error => "none",
+              :result =>  {  
+                            'cost_km_city' => taximeter["cost_km_city"],
+                            'cost_km_suburb' => taximeter["cost_km_suburb"],
+                            'cost_km_intercity' => taximeter["cost_km_intercity"],
+                            'cost_km_n1' => taximeter["cost_km_n1"],
+                            'cost_stopping' => taximeter["cost_stopping"],
+                            'cost_passenger_boarding_day' => taximeter["cost_passenger_boarding_day"],
+                            'cost_passenger_boarding_night' => taximeter["cost_passenger_boarding_night"],
+                            'cost_passenger_pre_boarding_day' => taximeter["cost_passenger_pre_boarding_day"],
+                            'cost_passenger_pre_boarding_night' => taximeter["cost_passenger_pre_boarding_night"]
+                          }
+            }
+    else
+      res = { :error => "ERROR: Login or password incorrect", :result => nil }
+    end
+    render :json => res
+  end
+
+  def lastposmap
+    @user = User.authenticate(params[:login], params[:password])
+    if @user
+      @users = User.all
+      @coordinates = []
+      @users.each do |user|
+        last_coord = Track.where(:user_id => user.id).last
+        if last_coord
+          icon = "marker.png"
+          if user.login =~ /driver/
+            m = user.login.scan(/(\d{1,3})$/)
+            icon = "#{m[0][0]}.png"
+          end
+          if "#{last_coord.lat}" != "" && "#{last_coord.lon}" != ""
+            driver = "{icon: \"#{icon}\", lat: \"#{last_coord.lat}\", lon: \"#{last_coord.lon}\"}"
+            @coordinates << driver
+          end
+        end
+      end
+      @coords = @coordinates.join(",")
+      logger.debug "#{@coords}"
+    else
+    end
+    render :layout => false, :file => 'api/lastposition.html.erb'
+  end
+
+  def smsdriverarrived
+    res = { :error => "none", :result => nil }
+    @user = User.authenticate(params[:login], params[:password])
+    if @user
+      nozak = params[:nozak]
+      order = Zakazi.where(:zakaz => nozak)
+      sms = Smsmsg.new
+      sms.nozak = nozak
+      if order.size != 0
+        sms.notel = order[0].telefon
+        sms.txtsms = "Машина #{@user.cardesc} такси Пчёлка прибыла на ваш заказ"
+        sms.sent = 0
+        if !sms.save
+          res = { :error => "ERROR: write sms date in DB ", :result => nil }
+        end
+      else
+        res = { :error => "ERROR: zakaz not found #{nozak}", :result => nil }
+      end
+    else
+      res = { :error => "ERROR: Login or password incorrect", :result => nil }
+    end
+    render :json => res
+  end
+
+  def smsdrivergotorder
+    res = { :error => "none", :result => nil }
+    @user = User.authenticate(params[:login], params[:password])
+    if @user
+      nozak = params[:nozak]
+      order = Zakazi.where(:zakaz => nozak)
+      if order.size != 0
+        sms = Smsmsg.new
+        sms.nozak = nozak
+        sms.notel = order[0].telefon
+        sms.txtsms = "Машина #{@user.cardesc} такси Пчёлка выехала на ваш заказ"
+        sms.sent = 0
+        if !sms.save
+          res = { :error => "ERROR: write sms date in DB ", :result => nil }
+        end
+      else
+        res = { :error => "ERROR: zakaz not found #{nozak}", :result => nil }
+      end
+    else
+      res = { :error => "ERROR: Login or password incorrect", :result => nil }
+    end
+    render :json => res
+  end
+
+#########################################################################################
+
+# получить список заказов
+  def orders
+    res = { :error => "none", :result => nil }
+    @user = User.authenticate(params[:login], params[:password])
+    if @user
+      order = Zakazi.all.order(zakaz: :desc)
+      if order.size > 0
+        #res = { :error => "none", :result => order }
+        res = order
+      else
+        res = { :error => "ERROR: zakazi not found", :result => nil }
+      end
+    else
+      res = { :error => "ERROR: Login or password incorrect", :result => nil }
+    end
+    render :json => res, content_type: "application/json"
+  end
+  
+# поставить себя на заказ
+  def orderaddcar
+    res = { :error => "none", :result => nil }
+    @user = User.authenticate(params[:login], params[:password])
+    if @user
+      unless params[:order_id].nil? && params[:car].nil?
+        logger.debug "order_id=#{params[:order_id]} , car=#{params[:car]}"
+        Zakazi.where("zakaz = #{params[:order_id]}").limit(1).update_all(car: @user.car)
+      else
+        res = { :error => "order_id or car is nil", :result => nil }
+      end
+    else
+      res = { :error => "Login or password incorrect", :result => nil }
+    end
+    render :json => res
+  end
+
+# снять себя с заказа
+  def orderdelcar
+    res = { :error => "none", :result => nil }
+    @user = User.authenticate(params[:login], params[:password])
+    if @user
+      unless params[:order_id].nil? && params[:car].nil?
+        logger.debug "order_id=#{params[:order_id]} , car=#{params[:car]}"
+        Zakazi.where("zakaz = #{params[:order_id]}").limit(1).update_all(car: nil)
+      else
+        res = { :error => "order_id or car is nil", :result => nil }
+      end
+    else
+      res = { :error => "Login or password incorrect", :result => nil }
     end
     render :json => res
   end

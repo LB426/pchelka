@@ -1,0 +1,58 @@
+<style style="text/css">
+.hoverTable {
+  width:99%; 
+  border-collapse:collapse;
+  margin-left:10px;
+}
+.hoverTable th { 
+  padding:4px; border:#4e95f4 1px solid;text-align: center;background: #ffff99;
+}
+.hoverTable td { 
+  padding:4px; border:#4e95f4 1px solid;text-align: center;
+}
+td.bombila {padding:4px; border:#4e95f4 1px solid;text-align: center;background: #EE82EE;}
+td.unavailable {padding:4px; border:#4e95f4 1px solid;text-align: center;background: #34495E;}
+td.unavailable a {color:#FFF;}
+.hoverTable tr {
+  background: #FFFFFF;
+}
+.hoverTable tr:hover {
+  background-color: #98FB98;
+}
+.formInline {  margin: 0px; padding:0px; }
+.formInline input { margin: 0px; padding:0px; }
+a.score { text-decoration: none; }
+</style>
+<br>
+<table class="hovertable">
+  <thead>
+    <tr>
+      <th>Логин</th>
+      <th>Машина</th>
+      <th>Описание машины</th>
+      <th>Таксометр</th>
+      <th>Счёт</th>
+      <th>Расчёт</th>
+      <th>Время пополнения счёта</th>
+      <th>&nbsp</th>
+    </tr
+  </thead>
+  <tbody>
+    <% @users.each do |user| %>
+    <tr>
+      <td class="<%= user.group %>"><%= link_to user.login, user_edit_path(user) %></td>
+      <td><%= user.car %></td>
+      <td><%= user.cardesc %></td>
+      <td><%= link_to "Таксометр", user_show_settings_taximeter_path(user) %></td>
+      <td><%= link_to user.monetary_credit, edit_user_score_path(user), :class => "score" %></td>
+      <td><%= link_to "изменить", edit_user_settings_credit_policy_path(user) %></td>
+      <td><%= user.tcredup.strftime("%Y-%m-%d %H:%M") unless user.tcredup.nil? %></td>
+      <td>
+        <%= form_tag(user_destroy_path(user), method: "post", :class => "formInline") do %>
+          <%= submit_tag("Удалить") %>
+        <% end %>
+      </td>
+    </tr>
+    <% end %>
+  </tbody>
+</table>

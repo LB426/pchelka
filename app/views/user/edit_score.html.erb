@@ -1,0 +1,15 @@
+<hr>
+<h3>Счёт водителя</h3>
+
+<%= form_tag(update_user_score_path(@user), method: "post") do %>
+  <p>Водитель: <strong><%= @user.login %></strong></p>
+  <p>
+    На счету: <strong><%= @user.monetary_credit %></strong> <%= @user.monetary_unit %>.
+  </p>
+  <p>
+    Пополнить счёт на: <%= text_field_tag(:monetary_credit, nil, :autocomplete => "off" ) %> <%= @user.monetary_unit %>.
+  </p>
+  <p>
+    <%= submit_tag("Пополнить") %>
+  </p>
+<% end %>

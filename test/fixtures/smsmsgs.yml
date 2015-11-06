@@ -1,0 +1,13 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  nozak: 1
+  notel: MyString
+  txtsms: MyString
+  sent: 1
+
+two:
+  nozak: 1
+  notel: MyString
+  txtsms: MyString
+  sent: 1

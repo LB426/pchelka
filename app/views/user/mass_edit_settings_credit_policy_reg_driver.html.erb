@@ -1,0 +1,17 @@
+<hr>
+<h3>Массовое назначение кредитной политики для постоянных водителей<h3>
+<hr>
+<%= form_tag(mupdate_creditpol_regdrv_path, method: "post") do %>
+  <p>
+    Метод снятия денег с кредитного счёта
+    <%= select_tag :method, options_for_select(@methods, @method) %>
+
+  </p>
+  <p>
+    <%= label_tag(:cost_per_order, "Снимаемая сумма, #{@monetary_unit} :") %>
+    <%= text_field_tag(:cost, @cost) %>
+  </p>
+  <p>
+    <%= submit_tag("Установить") %>
+  </p>
+<% end %>

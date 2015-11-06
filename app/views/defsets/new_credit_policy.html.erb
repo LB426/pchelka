@@ -1,0 +1,21 @@
+<h3>Создать настройку кредитной политики по умолчанию<h3>
+<hr>
+<%= form_tag(create_defset_credit_policy_path, method: "post") do %>
+  <p>
+    <%= label_tag(:name, "Название кредитной политики:") %>
+    <%= text_field_tag(:name, "кредитная политика постоянный водитель", :size => 40) %>
+  </p>
+  <p>
+    <%= label_tag(:value, "Способ снятия денег с кредитного счёта:") %>
+    <%= text_field_tag(:method, "one_per_24_hours") %>
+    <!-- <%= select_tag "value", "<option value=\"one_per_24_hours\">один раз за 24 часа</option>
+                             <option value=\"one_per_1_order\">за каждый заказ</option>".html_safe %> -->
+  </p>
+  <p>
+    <%= label_tag(:cost, "Сумма снимаемая согласно способу снятия:") %>
+    <%= text_field_tag(:cost, "150") %>
+  </p>
+  <p>
+    <%= submit_tag("Создать") %>
+  </p>
+<% end %>

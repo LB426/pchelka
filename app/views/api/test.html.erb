@@ -1,8 +1,3 @@
-<p>
-	<%= link_to "Home", root_url %> | 
-	<%= link_to "logout", logout_path %> |
-	<%= current_user.login %>
-</p>
 <ul>
 	<li><%= link_to "Тест запроса очереди", api_queue_path(current_user.login,current_user.password) %></li>
 	<li><%= link_to "Тест запроса заказа", api_order_path(current_user.login,current_user.password) %></li>
@@ -31,12 +26,18 @@ Order update<br>
 	<%= submit_tag 'Зарегистрировать диспетчера в очереди' %>
 <% end %>
 <hr>
-<%= form_tag(api_caronorder_path(current_user.login,current_user.password), method: :post, authenticity_token: false) do -%>
-	Машина<br>
-	<%= text_field_tag 'car', '2' %><br>
+поставить себя на заказ
+<%= form_tag(api_order_car_add_path(current_user.login,current_user.password), method: :post, authenticity_token: false) do -%>
 	Заказ<br>
 	<%= text_field_tag 'order_id', '1' %><br>
-	<%= submit_tag 'Поставить машину на заказ' %>
+	<%= submit_tag 'Выполнить' %>
+<% end %>
+<hr>
+удалить себя с заказа
+<%= form_tag(api_order_car_del_path(current_user.login,current_user.password), method: :post, authenticity_token: false) do -%>
+	Заказ<br>
+	<%= text_field_tag 'order_id', '1' %><br>
+	<%= submit_tag 'Выполнить' %>
 <% end %>
 <hr>
 <%= form_tag(api_zvonkiupd_path(current_user.login,current_user.password), method: :post, authenticity_token: false) do -%>
@@ -64,3 +65,21 @@ Order update<br>
 <%= link_to "Нажать тревожную кнопку", api_alarm_path(current_user.login, current_user.password) %>
 <hr>
 <%= link_to "Получить последние координаты ВСЕХ машин", api_getlastdrivercoord_path(current_user.login, current_user.password) %>
+<hr>
+<%= link_to "Считать таксометр", api_taximeter_path(current_user.login, current_user.password) %>
+<hr>
+<%= link_to "Последние позиции для драйверов", api_lastposmap_path(current_user.login, current_user.password) %>
+<hr>
+<%= form_tag(api_smsdrivergotorder_path(current_user.login,current_user.password), method: :post, authenticity_token: false) do -%>
+	Номер заказа <%= text_field_tag 'nozak', '1001' %><br>
+	<%= submit_tag 'Послать SMS - водитель принял заказ' %>
+<% end %>
+<hr>
+<%= form_tag(api_smsdriverarrived_path(current_user.login,current_user.password), method: :post, authenticity_token: false) do -%>
+	Номер заказа <%= text_field_tag 'nozak', '1001' %><br>
+	<%= submit_tag 'Послать SMS - водитель прибыл на место заказа' %>
+<% end %>
+<hr>
+<%= link_to "Тест списания денег со счёта обычного водителя", driver_moncred_dec_path %>
+<hr>
+<%= link_to "Получить список заказов", api_orders_path(current_user.login,current_user.password) %>
