@@ -26,12 +26,18 @@ Order update<br>
 	<%= submit_tag 'Зарегистрировать диспетчера в очереди' %>
 <% end %>
 <hr>
-<%= form_tag(api_caronorder_path(current_user.login,current_user.password), method: :post, authenticity_token: false) do -%>
-	Машина<br>
-	<%= text_field_tag 'car', '2' %><br>
+поставить себя на заказ
+<%= form_tag(api_order_car_add_path(current_user.login,current_user.password), method: :post, authenticity_token: false) do -%>
 	Заказ<br>
 	<%= text_field_tag 'order_id', '1' %><br>
-	<%= submit_tag 'Поставить машину на заказ' %>
+	<%= submit_tag 'Выполнить' %>
+<% end %>
+<hr>
+удалить себя с заказа
+<%= form_tag(api_order_car_del_path(current_user.login,current_user.password), method: :post, authenticity_token: false) do -%>
+	Заказ<br>
+	<%= text_field_tag 'order_id', '1' %><br>
+	<%= submit_tag 'Выполнить' %>
 <% end %>
 <hr>
 <%= form_tag(api_zvonkiupd_path(current_user.login,current_user.password), method: :post, authenticity_token: false) do -%>

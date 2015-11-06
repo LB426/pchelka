@@ -1,6 +1,17 @@
 Bee2::Application.routes.draw do
 
-  
+###############################################################
+# работа с заказами для новой андроидной программы
+# #############################################################
+
+  # поставить себя на заказ
+  post "api/:login/:password/order/addcar"   => 'api#orderaddcar',    :as => 'api_order_car_add'
+  # снять себя с заказа
+  post "api/:login/:password/order/delcar"   => 'api#orderdelcar',    :as => 'api_order_car_del'
+  # получить список заказов
+  get  "api/:login/:password/orders"         => 'api#orders',         :as => 'api_orders'  
+
+###############################################################  
   get 'user/driver/monetary_credit/decrease' => 'user#driver_monetary_credit_dec', :as => 'driver_moncred_dec'
 
   post 'defset/time/dec/score/driver/regular/destroy' => 'defsets#destroy_time_dec_score_regdrv', :as => 'destroy_defset_time_dec_score_regdrv' 
@@ -72,11 +83,9 @@ Bee2::Application.routes.draw do
   get "tracks/" => 'tracks#index', :as => 'tracks'
   get "tracks/:driver_id/show" => 'tracks#show', :as => 'track_show'
 
-  get  "api/:login/:password/orders"       => 'api#orders',        :as => 'api_orders'  
   post "api/:login/:password/setcoord"     => 'api#setcoord',      :as => 'api_setcoord'
   get  "api/:login/:password/goal"         => 'api#goal',          :as => 'api_goal'
   post "api/:login/:password/zvonkiupd"    => 'api#zvonkiupd',     :as => 'api_zvonkiupd'
-  post "api/:login/:password/caronorder"   => 'api#caronorder',    :as => 'api_caronorder'
   post "api/:login/:password/dispreg"      => 'api#dispreg',       :as => 'api_dispreg'
   post "api/:login/:password/stateupd"     => 'api#state_update',  :as => 'api_state_update'
   get  "api/:login/:password/reforders"    => 'api#refresh_orders',:as => 'api_refresh_orders'

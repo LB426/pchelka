@@ -11,7 +11,9 @@ class ApiController < ApplicationController
                                     :caronorder,
                                     :zvonkiupd,
                                     :smsdrivergotorder,
-                                    :smsdriverarrived
+                                    :smsdriverarrived,
+                                    :orderaddcar,
+                                    :orderdelcar
                                   ]
   #если раскомментировать то все параметры запросов будут писаться в таблицу log
   #before_filter :write_to_log
@@ -321,20 +323,6 @@ class ApiController < ApplicationController
     render :json => res
   end
 
-  def caronorder
-    res = { :error => "none", :result => nil }
-    @user = User.authenticate(params[:login], params[:password])
-    if @user
-      unless params[:order_id].nil? && params[:car].nil?
-        logger.debug "order_id=#{params[:order_id]} , car=#{params[:car]}"
-      else
-        res = { :error => "order_id or car is nil", :result => nil }
-      end
-    else
-      res = { :error => "Login or password incorrect", :result => nil }
-    end
-    render :json => res
-  end
 
   def zvonkiupd
     res = { :error => "none", :result => nil }
@@ -608,13 +596,16 @@ class ApiController < ApplicationController
     render :json => res
   end
 
+#########################################################################################
+
+# получить список заказов
   def orders
     res = { :error => "none", :result => nil }
     @user = User.authenticate(params[:login], params[:password])
     if @user
       order = Zakazi.all.order(zakaz: :desc)
-      #order = Zakazi.all.order("zakaz DESC")
       if order.size > 0
+        #res = { :error => "none", :result => order }
         res = order
       else
         res = { :error => "ERROR: zakazi not found", :result => nil }
@@ -622,9 +613,43 @@ class ApiController < ApplicationController
     else
       res = { :error => "ERROR: Login or password incorrect", :result => nil }
     end
-    render :json => res
+    render :json => res, content_type: "application/json"
   end
   
+# поставить себя на заказ
+  def orderaddcar
+    res = { :error => "none", :result => nil }
+    @user = User.authenticate(params[:login], params[:password])
+    if @user
+      unless params[:order_id].nil? && params[:car].nil?
+        logger.debug "order_id=#{params[:order_id]} , car=#{params[:car]}"
+        Zakazi.where("zakaz = #{params[:order_id]}").limit(1).update_all(car: @user.car)
+      else
+        res = { :error => "order_id or car is nil", :result => nil }
+      end
+    else
+      res = { :error => "Login or password incorrect", :result => nil }
+    end
+    render :json => res
+  end
+
+# снять себя с заказа
+  def orderdelcar
+    res = { :error => "none", :result => nil }
+    @user = User.authenticate(params[:login], params[:password])
+    if @user
+      unless params[:order_id].nil? && params[:car].nil?
+        logger.debug "order_id=#{params[:order_id]} , car=#{params[:car]}"
+        Zakazi.where("zakaz = #{params[:order_id]}").limit(1).update_all(car: nil)
+      else
+        res = { :error => "order_id or car is nil", :result => nil }
+      end
+    else
+      res = { :error => "Login or password incorrect", :result => nil }
+    end
+    render :json => res
+  end
+
 private
 
   def send_ref
