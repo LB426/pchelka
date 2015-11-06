@@ -27,22 +27,22 @@ class TracksController < ApplicationController
   end
 
   def all_last_point
-    @users = User.all
-    @coordinates = []
-    @users.each do |user|
-      last_coord = Track.where(:user_id => user.id).last
-      if last_coord
-        icon = "marker.png"
-        if user.login =~ /driver/
-          m = user.login.scan(/(\d{1,3})$/)
+#    @users = User.all
+#    @coordinates = []
+#    @users.each do |user|
+#      last_coord = Track.where(:user_id => user.id).last
+#      if last_coord
+#        icon = "marker.png"
+#        if user.login =~ /driver/
+#          m = user.login.scan(/(\d{1,3})$/)
           #logger.debug "m.size = #{m.size}"
           #logger.debug "m[0] = #{m[0][0]}"
-          icon = "#{m[0][0]}.png"
-        end
-        driver = { :icon => icon, :lat => last_coord.lat, :lon => last_coord.lon }
-        @coordinates << driver
-      end
-    end
+#          icon = "#{m[0][0]}.png"
+#        end
+#        driver = { :icon => icon, :lat => last_coord.lat, :lon => last_coord.lon }
+#        @coordinates << driver
+#      end
+#    end
     #logger.debug "@coordinates.size = #{@coordinates.size}"
   end
 
