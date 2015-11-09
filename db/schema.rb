@@ -155,6 +155,13 @@ ActiveRecord::Schema.define(version: 20150925084249) do
     t.integer "col",   limit: 4
   end
 
+  create_table "cqueue2", force: :cascade do |t|
+    t.integer  "car",   limit: 4, default: 0, null: false
+    t.integer  "row",   limit: 4, default: 0, null: false
+    t.integer  "state", limit: 4, default: 0, null: false
+    t.datetime "dt",                          null: false
+  end
+
   create_table "defsets", force: :cascade do |t|
     t.string   "name",       limit: 255
     t.text     "value",      limit: 65535
@@ -247,7 +254,7 @@ ActiveRecord::Schema.define(version: 20150925084249) do
     t.string  "kode",      limit: 10
     t.date    "dat"
     t.time    "tim"
-    t.string  "adres",     limit: 25
+    t.string  "adres",     limit: 50
     t.integer "car",       limit: 4
     t.time    "beg"
     t.time    "en"

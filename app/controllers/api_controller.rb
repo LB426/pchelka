@@ -603,7 +603,8 @@ class ApiController < ApplicationController
     res = { :error => "none", :result => nil }
     @user = User.authenticate(params[:login], params[:password])
     if @user
-      order = Zakazi.all.order(zakaz: :desc)
+      #order = Zakazi.all.order(zakaz: :desc)
+      order = Zakazi.where("car = :car OR car IS NULL", car: @user.car).order(zakaz: :desc)
       if order.size > 0
         #res = { :error => "none", :result => order }
         res = order
