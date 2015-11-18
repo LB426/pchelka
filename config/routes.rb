@@ -10,7 +10,8 @@ Bee2::Application.routes.draw do
   post "api/:login/:password/order/delcar"   => 'api#orderdelcar',    :as => 'api_order_car_del'
   # получить список заказов
   get  "api/:login/:password/orders"         => 'api#orders',         :as => 'api_orders'  
-
+  # отработка нажатия на кнопку расчёт закончен
+  post "api/:login/:password/order/complete" => 'api#ordercomplete',  :as => 'api_order_complete'
 ###############################################################  
   get 'user/driver/monetary_credit/decrease' => 'user#driver_monetary_credit_dec', :as => 'driver_moncred_dec'
 

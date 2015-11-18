@@ -651,6 +651,24 @@ class ApiController < ApplicationController
     render :json => res
   end
 
+# отработка нажатия на кнопку расчёт закончен
+  def ordercomplete
+    res = { :error => "none", :result => nil }
+    @user = User.authenticate(params[:login], params[:password])
+    if @user
+      unless params[:order_id].nil? && params[:cost].nil?
+        logger.debug "order_id=#{params[:order_id]} , cost=#{params[:cost]}"
+        @order = Zakazi.where("zakaz = #{params[:order_id]}").first
+        @order.destroy
+      else
+        res = { :error => "order_id or car is nil", :result => nil }
+      end
+    else
+      res = { :error => "Login or password incorrect", :result => nil }
+    end
+    render :json => res
+  end
+
 private
 
   def send_ref
