@@ -658,8 +658,12 @@ class ApiController < ApplicationController
     if @user
       unless params[:order_id].nil? && params[:cost].nil?
         logger.debug "order_id=#{params[:order_id]} , cost=#{params[:cost]}"
-        @order = Zakazi.where("zakaz = #{params[:order_id]}").first
-        @order.destroy
+        @order = Zakazi.where("zakaz = ? AND car = ?", params[:order_id], @user.car)
+        if @order.size == 1
+          @order.delete_all
+        else
+          res = { :error => "order not found", :result => nil }
+        end
       else
         res = { :error => "order_id or car is nil", :result => nil }
       end
