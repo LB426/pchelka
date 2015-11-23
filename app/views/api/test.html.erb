@@ -83,3 +83,9 @@ Order update<br>
 <%= link_to "Тест списания денег со счёта обычного водителя", driver_moncred_dec_path %>
 <hr>
 <%= link_to "Получить список заказов", api_orders_path(current_user.login,current_user.password) %>
+<hr>
+<%= form_tag(api_order_complete_path(current_user.login,current_user.password), method: :post, authenticity_token: false) do -%>
+	Order id <%= text_field_tag 'order_id' %><br>
+	Стоимость заказа <%= text_field_tag 'cost', '36' %><br>
+	<%= submit_tag 'Отработать заказ и удалить водителя из zakazi' %>
+<% end %>

@@ -32,7 +32,7 @@ class ApiController < ApplicationController
           2 => { 'name' => 'Черёмушки', 'queue' => [] },
           3 => { 'name' => 'Элеватор', 'queue' => [] },
           4 => { 'name' => 'Глобус', 'queue' => [] },
-          5 => { 'name' => 'Рынок', 'queue' => [] },
+          4 => { 'name' => 'Рынок', 'queue' => [] },
           6 => { 'name' => 'Магнолия', 'queue' => [] },
           7 => { 'name' => 'Пентагон', 'queue' => [] },
           8 => { 'name' => 'Военный', 'queue' => [] },
@@ -660,7 +660,9 @@ class ApiController < ApplicationController
         logger.debug "order_id=#{params[:order_id]} , cost=#{params[:cost]}"
         @order = Zakazi.where("zakaz = ? AND car = ?", params[:order_id], @user.car)
         if @order.size == 1
-          @order.delete_all
+          #@order.delete_all
+          # поставить машину в очередь для заранее определённого региона
+          place_to_region_queue(@user)
         else
           res = { :error => "order not found", :result => nil }
         end
@@ -700,6 +702,25 @@ private
       end
     end
     return res
+  end
+
+  def place_to_region_queue(user)
+    track = Track.where("user_id = ?",user.id).last
+    logger.debug "track: lon:#{track.lon} lat:#{track.lat}"
+    carcoord = { :lon => track.lon, :lat => track.lat }
+    intersect(carcoord)
+  end
+
+  def intersect(coord)
+    ttg = { :v1 => { :lat => 45.877669, :lon => 40.103383 },
+            :v2 => { :lat => 45.886392, :lon => 40.132093 },
+            :v3 => { :lat => 45.846079, :lon => 40.170674 },
+            :v4 => { :lat => 45.843479, :lon => 40.157199 } }
+    d= (coord[:lon]-ttg[:v2][:lon]) * 
+       (ttg[:v4][:lat]-ttg[:v1][:lat]) -
+       (coord[:lat]-ttg[:v2][:lat]) *
+       (ttg[:v4][:lon]-ttg[:v1][:lon]);
+    logger.debug "d=#{d.class}"   
   end
 
 end
