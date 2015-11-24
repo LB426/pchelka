@@ -713,6 +713,10 @@ private
       pareg = GeoRuby::SimpleFeatures::Polygon.from_coordinates([region.value])
       if pareg.contains_point?(carpoint)
         logger.debug "попал в #{region.name}"
+        # тут алгоритм постановки в очередь для этого региона
+        # вар №1 - ставиться в очередь автоматически и поднимается вверх по времени, в зависимости от выбытия из очереди других
+        # вар №2 - .... ???
+        # стратегия нахождения в очереди выбирается каким то способом ???
       else
         logger.debug "НЕ попал в #{region.name}"
       end
