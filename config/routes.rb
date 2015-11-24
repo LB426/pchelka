@@ -14,6 +14,12 @@ Bee2::Application.routes.draw do
   post "api/:login/:password/order/complete" => 'api#ordercomplete',  :as => 'api_order_complete'
 ###############################################################  
   get 'user/driver/monetary_credit/decrease' => 'user#driver_monetary_credit_dec', :as => 'driver_moncred_dec'
+###############################################################
+# работа с настройками по умолчанию
+###############################################################
+  get  'defset/regions' => 'defsets#index_defset_parking_region', :as => 'index_defset_parking_region'
+  post 'defset/region/create' => 'defsets#create_parking_region', :as => 'create_defset_parking_region'
+  get  'defset/region/new'    => 'defsets#new_parking_region',    :as => 'new_defset_parking_region'
 
   post 'defset/time/dec/score/driver/regular/destroy' => 'defsets#destroy_time_dec_score_regdrv', :as => 'destroy_defset_time_dec_score_regdrv' 
   post 'defset/time/dec/score/driver/regular/update'  => 'defsets#update_time_dec_score_regdrv',  :as => 'update_defset_time_dec_score_regdrv' 

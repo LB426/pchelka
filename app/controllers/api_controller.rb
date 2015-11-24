@@ -13,7 +13,8 @@ class ApiController < ApplicationController
                                     :smsdrivergotorder,
                                     :smsdriverarrived,
                                     :orderaddcar,
-                                    :orderdelcar
+                                    :orderdelcar,
+                                    :ordercomplete
                                   ]
   #если раскомментировать то все параметры запросов будут писаться в таблицу log
   #before_filter :write_to_log
@@ -660,7 +661,7 @@ class ApiController < ApplicationController
         logger.debug "order_id=#{params[:order_id]} , cost=#{params[:cost]}"
         @order = Zakazi.where("zakaz = ? AND car = ?", params[:order_id], @user.car)
         if @order.size == 1
-          #@order.delete_all
+          @order.delete_all
           # поставить машину в очередь для заранее определённого региона
           place_to_region_queue(@user)
         else
@@ -706,21 +707,16 @@ private
 
   def place_to_region_queue(user)
     track = Track.where("user_id = ?",user.id).last
-    logger.debug "track: lon:#{track.lon} lat:#{track.lat}"
-    carcoord = { :lon => track.lon, :lat => track.lat }
-    intersect(carcoord)
-  end
-
-  def intersect(coord)
-    ttg = { :v1 => { :lat => 45.877669, :lon => 40.103383 },
-            :v2 => { :lat => 45.886392, :lon => 40.132093 },
-            :v3 => { :lat => 45.846079, :lon => 40.170674 },
-            :v4 => { :lat => 45.843479, :lon => 40.157199 } }
-    d= (coord[:lon]-ttg[:v2][:lon]) * 
-       (ttg[:v4][:lat]-ttg[:v1][:lat]) -
-       (coord[:lat]-ttg[:v2][:lat]) *
-       (ttg[:v4][:lon]-ttg[:v1][:lon]);
-    logger.debug "d=#{d.class}"   
+    carpoint = GeoRuby::SimpleFeatures::Point.from_x_y(track.lon,track.lat)
+    @regions = Defset.where("name like '%район%'").distinct
+    @regions.each do |region|
+      pareg = GeoRuby::SimpleFeatures::Polygon.from_coordinates([region.value])
+      if pareg.contains_point?(carpoint)
+        logger.debug "попал в #{region.name}"
+      else
+        logger.debug "НЕ попал в #{region.name}"
+      end
+    end
   end
 
 end

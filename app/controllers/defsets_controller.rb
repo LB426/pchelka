@@ -308,6 +308,28 @@ class DefsetsController < ApplicationController
     redirect_to showall_defsets_path
   end
 
+  def create_parking_region
+    @defset = Defset.new
+    @defset.name = params[:name]
+    a = Array.new
+    a << [ params[:point1_long], params[:point1_lat] ]
+    a << [ params[:point2_long], params[:point2_lat] ]
+    a << [ params[:point3_long], params[:point3_lat] ]
+    a << [ params[:point4_long], params[:point4_lat] ]
+    @defset.value = a
+    if @defset.save
+      flash[:notice] = 'Настройка <strong>стояночный регион</strong> создана успешено'.html_safe
+      redirect_to index_defset_parking_region_path
+    else
+      flash[:error] = 'Создание настройки "стояночный регион" НЕ удалась.'
+      redirect_to showall_defsets_path
+    end
+  end
+
+  def index_defset_parking_region
+    @regions = Defset.where("name like '%район%'")
+  end
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_defset

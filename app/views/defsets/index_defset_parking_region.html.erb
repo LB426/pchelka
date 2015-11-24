@@ -1,0 +1,16 @@
+<h3>стояночные регионы<h3>
+<hr>
+<table>
+  <th>название</th>
+  <th>координаты</th>
+  <% @regions.each do |region| %>
+    <tr>
+      <td><%= region.name %></td>
+      <td>
+        <% region.value.each do |p| %>
+          lon: <strong><%= p[0] %></strong> lat: <strong><%= p[1] %></strong><br>
+        <% end %>
+      </td>
+    </tr>
+  <% end %>
+</table>

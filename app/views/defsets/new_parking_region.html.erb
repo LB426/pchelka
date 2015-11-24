@@ -1,0 +1,38 @@
+<h3>Создать стояночный регион<h3>
+<strong>
+регион определяется несколькими точками, их координаты можно взять из googlemap
+</strong>
+<hr>
+<%= form_tag(create_defset_parking_region_path, method: "post") do %>
+  <p>
+    <%= label_tag(:name, "Название региона:") %>
+    <%= text_field_tag(:name, "район Черёмушки") %>
+  </p>
+  <p>
+    <%= label_tag(:point1, "точка №1, долгота") %>
+    <%= text_field_tag(:point1_long, "45.858226") %><br>
+    <%= label_tag(:point1, "точка №1, широта") %>
+    <%= text_field_tag(:point1_lat, "40.121070") %>
+  </p>
+  <p>
+    <%= label_tag(:point2, "точка №2, долгота") %>
+    <%= text_field_tag(:point2_long, "45.877285") %><br>
+    <%= label_tag(:point2, "точка №2, широта") %>
+    <%= text_field_tag(:point2_lat, "40.122223") %>
+  </p>
+  <p>
+    <%= label_tag(:point3, "точка №3, долгота") %>
+    <%= text_field_tag(:point3_long, "45.859536") %><br>
+    <%= label_tag(:point3, "точка №3, широта") %>
+    <%= text_field_tag(:point3_lat, "40.162765") %>
+  </p>
+  <p>
+    <%= label_tag(:point4, "точка №4, долгота") %>
+    <%= text_field_tag(:point4_long, "45.844825") %><br>
+    <%= label_tag(:point4, "точка №4, широта") %>
+    <%= text_field_tag(:point4_lat, "40.139702") %>
+  </p>
+  <p>
+    <%= submit_tag("Создать") %>
+  </p>
+<% end %>
