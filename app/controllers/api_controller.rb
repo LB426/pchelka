@@ -14,7 +14,8 @@ class ApiController < ApplicationController
                                     :smsdriverarrived,
                                     :orderaddcar,
                                     :orderdelcar,
-                                    :ordercomplete
+                                    :ordercomplete,
+                                    :setcoord
                                   ]
   #если раскомментировать то все параметры запросов будут писаться в таблицу log
   #before_filter :write_to_log
@@ -28,46 +29,46 @@ class ApiController < ApplicationController
         @user.update_attribute(:ip, request.env["HTTP_X_FORWARDED_FOR"])
       end     
        
-      @points ={
-          1 => { 'name' => 'на заказе', 'queue' => [] },
-          2 => { 'name' => 'Черёмушки', 'queue' => [] },
-          3 => { 'name' => 'Элеватор', 'queue' => [] },
-          4 => { 'name' => 'Глобус', 'queue' => [] },
-          4 => { 'name' => 'Рынок', 'queue' => [] },
-          6 => { 'name' => 'Магнолия', 'queue' => [] },
-          7 => { 'name' => 'Пентагон', 'queue' => [] },
-          8 => { 'name' => 'Военный', 'queue' => [] },
-          9 => { 'name' => 'Та сторона', 'queue' => [] },
-          10 => { 'name' => 'Парковый', 'queue' => [] }
-      }
-
-      @num_queues = @points.size
-      table = PointQueue.where("car > 0")
-      @points.each_key do |k|
-        pqueue = PointQueue.where("point_id = ?",k).order("created_at ASC")
-        if pqueue.size != 0
+      ###########################################################################
+      logger.debug "-------------->>>>>>>>>>>"
+      @regions = Defset.where("name like '%район%'").distinct
+      logger.debug "@regions: #{@regions.size}"
+      @num_queues = @regions.size
+      @points = {}
+      counter = 1
+      @regions.each do |region|
+        @points[counter] = {'name'=>region.name,'queue'=>[]}
+        pqueue = PointQueue.where("point_id = ?",region.id).order("created_at ASC")
+        logger.debug "counter: #{counter}, pqueue: #{pqueue.size}, regname: #{region.name}"
+        if pqueue.size > 0
           pqueue.each do |r|
-            @points[k]['queue'] << { 'car_num' => r['car'], 'car_state' => r['state'] }
+            @points[counter]['queue'] << { 'car_num' => r.car, 'car_state' => r.state }
           end
-        else
+          logger.debug "@points[#{counter}]: #{@points[counter]}"
         end
+        
+        counter += 1
       end
+      logger.debug "@points: #{@points}"
+      
       @max_col = 0
-      for i in 2..@num_queues do
+      
+      for i in 1..@num_queues do
         if @points[i]['queue'].size > @max_col
           @max_col = @points[i]['queue'].size
         end
       end
-
+      logger.debug "@max_col: #{@max_col}"
+      
     else
       res = { :error => "Login or password incorrect", :result => nil }
       render :json => res
     end
 
-    rescue Exception => e
-      logger.debug "Exception in ApiController queue: #{e.message} "
-      res = { :error => e.message, :result => nil }
-      render :json => res
+#    rescue Exception => e
+#      logger.debug "Exception in ApiController queue: #{e.message} "
+#      res = { :error => e.message, :result => nil }
+#      render :json => res
   end
   
   def test
@@ -226,7 +227,7 @@ class ApiController < ApplicationController
           p2.car = @user.car
           p2.state = params[:state]
           if p2.save
-            # шлем сообщение обновления таблиц
+            # шлём сообщение обновления таблиц
             if send_ref != true
               res = { :error => "message REF send ERROR", :result => nil }
             end
@@ -438,18 +439,19 @@ class ApiController < ApplicationController
     end
   end
 
+  # делает запись в таблицу отслеживания местоположения
   def setcoord
     res = { :error => "none", :result => nil }
     @user = User.authenticate(params[:login], params[:password])
     if @user
-      lat = params[:lat]
-      lon = params[:lon]
       track = Track.new
       track.user_id = @user.id
-      track.lat = lat
-      track.lon = lon
+      track.lat = params[:lat]
+      track.lon = params[:lon]
       if !track.save
-        res = { :error => "ERROR: write LAT LON in DB ", :result => nil }
+        res = { :error => "ERROR: write LAT LON in DB Tracks", :result => nil }
+      else
+        execqueue(@user)
       end
     else
       res = { :error => "ERROR: Login or password incorrect", :result => nil }
@@ -599,7 +601,7 @@ class ApiController < ApplicationController
 
 #########################################################################################
 
-# получить список заказов
+  # получить список заказов
   def orders
     res = { :error => "none", :result => nil }
     @user = User.authenticate(params[:login], params[:password])
@@ -618,7 +620,7 @@ class ApiController < ApplicationController
     render :json => res, content_type: "application/json"
   end
   
-# поставить себя на заказ
+  # поставить себя на заказ
   def orderaddcar
     res = { :error => "none", :result => nil }
     @user = User.authenticate(params[:login], params[:password])
@@ -635,7 +637,7 @@ class ApiController < ApplicationController
     render :json => res
   end
 
-# снять себя с заказа
+  # снять себя с заказа
   def orderdelcar
     res = { :error => "none", :result => nil }
     @user = User.authenticate(params[:login], params[:password])
@@ -663,7 +665,7 @@ class ApiController < ApplicationController
         if @order.size == 1
           @order.delete_all
           # поставить машину в очередь для заранее определённого региона
-          place_to_region_queue(@user)
+          execqueue(@user)
         else
           res = { :error => "order not found", :result => nil }
         end
@@ -705,22 +707,63 @@ private
     return res
   end
 
-  def place_to_region_queue(user)
-    track = Track.where("user_id = ?",user.id).last
-    carpoint = GeoRuby::SimpleFeatures::Point.from_x_y(track.lon,track.lat)
+  # обработка очереди
+  def execqueue(user)
+    # если не в очереди и не на заказе то поставь в очередь
+    if !inqueue?(user) && !onorder?(user)
+      pushin_to_region_queue(user)
+    end
+    # если на заказе то удалить из очереди
+    if onorder?(user)
+      remove_from_queue(user)
+    end
+    # если не на заказе и в очереди
+    if !onorder?(user) || inqueue?(user)
+    end
+    
+  end
+  
+  # проверяет машина в очереди или нет
+  def inqueue?(user)
+    res = true
+    p = PointQueue.where(:car => user.car).count
+    res = false if p == 0
+    return res
+  end
+
+  # проверяет машина на заказе или нет
+  def onorder?(user)
+    res = true
+    oc = Zakazi.where("car = ?", user.car).count
+    res = false if oc == 0
+    return res
+  end
+
+  # помещаем машину в очередь в зависимости от региона, если не попала ни в один регион то идентификатор региона nil 
+  def pushin_to_region_queue(user)
+    lastcarpos = Track.where("user_id = ?",user.id).last
+    point = GeoRuby::SimpleFeatures::Point.from_x_y(lastcarpos.lon, lastcarpos.lat)
     @regions = Defset.where("name like '%район%'").distinct
+    ishit = false
     @regions.each do |region|
-      pareg = GeoRuby::SimpleFeatures::Polygon.from_coordinates([region.value])
-      if pareg.contains_point?(carpoint)
-        logger.debug "попал в #{region.name}"
-        # тут алгоритм постановки в очередь для этого региона
-        # вар №1 - ставиться в очередь автоматически и поднимается вверх по времени, в зависимости от выбытия из очереди других
-        # вар №2 - .... ???
-        # стратегия нахождения в очереди выбирается каким то способом ???
-      else
-        logger.debug "НЕ попал в #{region.name}"
+      if region.name != "район вне зоны"
+        targetregion = GeoRuby::SimpleFeatures::Polygon.from_coordinates([region.value])
+        if targetregion.contains_point?(point)
+          PointQueue.create(point_id: region.id, car: user.car, state: 1)
+          ishit = true
+          break
+        end
       end
     end
+    if ishit == false
+      # если не попал ни в один из заранее настроенных регионов
+      outofregion = Defset.find_by_name('вне зоны')
+      PointQueue.create(point_id: outofregion.id, car: user.car, state: 1)
+    end
+  end
+
+  def remove_from_queue(user)
+    PointQueue.where(:car => user.car).destroy_all
   end
 
 end
