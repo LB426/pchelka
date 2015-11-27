@@ -7,9 +7,13 @@
     <tr>
       <td><%= region.name %></td>
       <td>
-        <% region.value.each do |p| %>
-          lon: <strong><%= p[0] %></strong> lat: <strong><%= p[1] %></strong><br>
-        <% end %>
+		<% unless region.value.nil? %>
+          <% region.value.each do |p| %>
+			lon: <strong><%= p[0] %></strong> lat: <strong><%= p[1] %></strong><br>
+          <% end %>
+		<% else %>
+		  нет координат
+		<% end %>
       </td>
     </tr>
   <% end %>
