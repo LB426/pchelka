@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150925084249) do
+ActiveRecord::Schema.define(version: 20151130131920) do
 
   create_table "abonenty", id: false, force: :cascade do |t|
     t.integer "num",        limit: 4
@@ -246,6 +246,7 @@ ActiveRecord::Schema.define(version: 20150925084249) do
     t.integer  "monetary_credit", limit: 4,     default: 0
     t.string   "cardesc",         limit: 255
     t.datetime "tcredup"
+    t.boolean  "mpinq"
   end
 
   create_table "zakazi", id: false, force: :cascade do |t|

@@ -15,7 +15,10 @@ class ApiController < ApplicationController
                                     :orderaddcar,
                                     :orderdelcar,
                                     :ordercomplete,
-                                    :setcoord
+                                    :setcoord,
+                                    :queue_create,
+                                    :queue_exec_manual,
+                                    :queue_remove_car
                                   ]
   #если раскомментировать то все параметры запросов будут писаться в таблицу log
   #before_filter :write_to_log
@@ -202,45 +205,6 @@ class ApiController < ApplicationController
       # шлем сообщение обновления таблиц
       if send_ref != true
         res = { :error => "message REF send ERROR", :result => nil }
-      end
-    else
-      res = { :error => "Login or password incorrect", :result => nil }
-    end
-    render :json => res
-  end
-
-  def push_in_queue
-    res = { :error => "none", :result => nil }
-    @user = User.authenticate(params[:login], params[:password])
-    if @user
-      if request.env["HTTP_X_FORWARDED_FOR"].nil? == true
-        @user.update_attribute(:ip, request.remote_ip)
-      else
-        @user.update_attribute(:ip, request.env["HTTP_X_FORWARDED_FOR"])
-      end
-      p = PointQueue.where(:car => @user.car)
-      if p.size == 1
-        unless params[:point_id].nil? && params[:state].nil?
-          p[0].destroy
-          p2 = PointQueue.new
-          p2.point_id = params[:point_id]
-          p2.car = @user.car
-          p2.state = params[:state]
-          if p2.save
-            # шлём сообщение обновления таблиц
-            if send_ref != true
-              res = { :error => "message REF send ERROR", :result => nil }
-            end
-          else
-            res = { :error => "write in DB error", :result => nil }
-          end
-        else
-          logger.debug "ERROR-> point_id or state is empty. point_id=#{params[:point_id]} state=params[:state]"
-          res = {:error => "ERROR-> point_id or state is empty", :result => nil}
-        end
-      else
-				logger.debug "ERROR-> amount car on point: #{p.size} for user: #{@user.login} and car: #{@user.car}"
-        res = { :error => "ERROR-> amount car on point != 1, p.size=#{p.size}", :result => nil }
       end
     else
       res = { :error => "Login or password incorrect", :result => nil }
@@ -628,6 +592,7 @@ class ApiController < ApplicationController
       unless params[:order_id].nil? && params[:car].nil?
         logger.debug "order_id=#{params[:order_id]} , car=#{params[:car]}"
         Zakazi.where("zakaz = #{params[:order_id]}").limit(1).update_all(car: @user.car)
+        send_ref
       else
         res = { :error => "order_id or car is nil", :result => nil }
       end
@@ -645,6 +610,7 @@ class ApiController < ApplicationController
       unless params[:order_id].nil? && params[:car].nil?
         logger.debug "order_id=#{params[:order_id]} , car=#{params[:car]}"
         Zakazi.where("zakaz = #{params[:order_id]}").limit(1).update_all(car: nil)
+        send_ref
       else
         res = { :error => "order_id or car is nil", :result => nil }
       end
@@ -654,7 +620,7 @@ class ApiController < ApplicationController
     render :json => res
   end
 
-# отработка нажатия на кнопку расчёт закончен
+  # отработка нажатия на кнопку расчёт закончен
   def ordercomplete
     res = { :error => "none", :result => nil }
     @user = User.authenticate(params[:login], params[:password])
@@ -666,6 +632,7 @@ class ApiController < ApplicationController
           @order.delete_all
           # поставить машину в очередь для заранее определённого региона
           execqueue(@user)
+          send_ref
         else
           res = { :error => "order not found", :result => nil }
         end
@@ -678,6 +645,71 @@ class ApiController < ApplicationController
     render :json => res
   end
 
+  # получить список районов с координатами
+  def regions
+    res = { :error => "none", :result => nil }
+    @user = User.authenticate(params[:login], params[:password])
+    if @user
+      defsets = Defset.where("name like 'район%'")
+      if defsets.size > 0
+        arr = Array.new
+        defsets.each do |ds|
+          arr << { id: ds.id, name: ds.name }
+        end
+        res = arr
+      else
+        res = { :error => "ERROR: defsets not found", :result => nil }
+      end
+    else
+      res = { :error => "Login or password incorrect", :result => nil }
+    end
+    render :json => res
+  end
+
+  # поставить машину в очередь вручную, из андроид приложения
+  def queue_create
+    res = { :error => "none", :result => nil }
+    @user = User.authenticate(params[:login], params[:password])
+    if @user
+      execqueue(@user, params[:region_id])
+      send_ref
+    else
+      res = { :error => "Login or password incorrect", :result => nil }
+    end
+    render :json => res    
+  end
+
+  # установить признак ручной обработки очереди в настройках пользователя
+  def queue_exec_manual
+    res = { :error => "none", :result => nil }
+    @user = User.authenticate(params[:login], params[:password])
+    if @user
+      if params[:mpinq] == "1"
+        @user.mpinq = true
+        @user.save
+      else
+        @user.mpinq = false
+        @user.save
+      end
+    else
+      res = { :error => "Login or password incorrect", :result => nil }
+    end
+    render :json => res    
+  end
+
+  # удалить машину из очереди
+  def queue_remove_car
+    res = { :error => "none", :result => nil }
+    @user = User.authenticate(params[:login], params[:password])
+    if @user
+      remove_from_queue(@user)
+      send_ref
+    else
+      res = { :error => "Login or password incorrect", :result => nil }
+    end
+    render :json => res    
+  end
+  
 private
 
   def send_ref
@@ -708,17 +740,18 @@ private
   end
 
   # обработка очереди
-  def execqueue(user)
+  def execqueue(user, region_id = nil)
     # если не в очереди и не на заказе то поставь в очередь
     if !inqueue?(user) && !onorder?(user)
-      pushin_to_region_queue(user)
+      if user.mpinq == true # в БД 1
+        pushin_to_region_queue(user,region_id) if region_id != nil
+      else
+        pushin_to_region_queue_use_real_coord(user)
+      end
     end
     # если на заказе то удалить из очереди
     if onorder?(user)
       remove_from_queue(user)
-    end
-    # если не на заказе и в очереди
-    if !onorder?(user) || inqueue?(user)
     end
     
   end
@@ -740,7 +773,7 @@ private
   end
 
   # помещаем машину в очередь в зависимости от региона, если не попала ни в один регион то идентификатор региона nil 
-  def pushin_to_region_queue(user)
+  def pushin_to_region_queue_use_real_coord(user)
     lastcarpos = Track.where("user_id = ?",user.id).last
     point = GeoRuby::SimpleFeatures::Point.from_x_y(lastcarpos.lon, lastcarpos.lat)
     @regions = Defset.where("name like '%район%'").distinct
@@ -762,6 +795,15 @@ private
     end
   end
 
+  def pushin_to_region_queue(user, region_id)
+    region = Defset.where("id = ? AND name like '%район%'", region_id)
+    if region.size == 1
+      PointQueue.create(point_id: region_id, car: user.car, state: 1)
+    else
+      logger.debug "ERROR: region with id: #{region_id} not found"
+    end
+  end
+  
   def remove_from_queue(user)
     PointQueue.where(:car => user.car).destroy_all
   end
