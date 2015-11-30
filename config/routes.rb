@@ -1,17 +1,29 @@
+# coding: utf-8
 Bee2::Application.routes.draw do
 
+###############################################################
+# манипуляции с очередью
+###############################################################
+  
+  # поставить машину в очередь в определённый регион
+  post "api/:login/:password/queue" => 'api#queue_create',      :as => 'api_queue_create'
+  get  "api/:login/:password/queue" => 'api#queue',             :as => 'api_queue'
+  post "api/:login/:password/mpinq" => 'api#queue_exec_manual', :as => 'api_queue_exec_manual'
+  delete  "api/:login/:password/queue" => 'api#queue_remove_car',  :as => 'api_queue_remove_car' 
 ###############################################################
 # работа с заказами для новой андроидной программы
 # #############################################################
 
   # поставить себя на заказ
-  post "api/:login/:password/order/addcar"   => 'api#orderaddcar',    :as => 'api_order_car_add'
+  post "api/:login/:password/order/addcar"   => 'api#orderaddcar',   :as => 'api_order_car_add'
   # снять себя с заказа
-  post "api/:login/:password/order/delcar"   => 'api#orderdelcar',    :as => 'api_order_car_del'
+  post "api/:login/:password/order/delcar"   => 'api#orderdelcar',   :as => 'api_order_car_del'
   # получить список заказов
-  get  "api/:login/:password/orders"         => 'api#orders',         :as => 'api_orders'  
+  get  "api/:login/:password/orders"         => 'api#orders',        :as => 'api_orders'  
   # отработка нажатия на кнопку расчёт закончен
-  post "api/:login/:password/order/complete" => 'api#ordercomplete',  :as => 'api_order_complete'
+  post "api/:login/:password/order/complete" => 'api#ordercomplete', :as => 'api_order_complete'
+  # получить список районов с координатами
+  get  "api/:login/:password/defset/regions" => 'api#regions',       :as => 'api_defset_regions'
 ###############################################################  
   get 'user/driver/monetary_credit/decrease' => 'user#driver_monetary_credit_dec', :as => 'driver_moncred_dec'
 ###############################################################
@@ -96,11 +108,9 @@ Bee2::Application.routes.draw do
   post "api/:login/:password/dispreg"      => 'api#dispreg',       :as => 'api_dispreg'
   post "api/:login/:password/stateupd"     => 'api#state_update',  :as => 'api_state_update'
   get  "api/:login/:password/reforders"    => 'api#refresh_orders',:as => 'api_refresh_orders'
-  post "api/:login/:password/qpush"        => 'api#push_in_queue', :as => 'api_qpush'
   post "api/:login/:password/orderdestroy" => 'api#order_destroy', :as => 'api_order_destroy'
   post "api/:login/:password/order"        => 'api#order_update',  :as => 'api_order_update'
   get  "api/:login/:password/order"        => 'api#order',         :as => 'api_order'
-  get  "api/:login/:password/queue"        => 'api#queue',         :as => 'api_queue'
   get  "api/test"                          => 'api#test',          :as => 'api_test'
   
   controller :sessions do
