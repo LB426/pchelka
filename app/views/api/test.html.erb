@@ -9,17 +9,6 @@ Order update<br>
 	<%= submit_tag 'Save' %>
 <% end %>
 <hr>
-Стать в очередь<br>
-<%= form_tag(api_qpush_path(current_user.login,current_user.password), method: :post, authenticity_token: false) do -%>
-	Идентификатор точки<br>
-	<%= text_field_tag 'point_id', '2' %><br>
-	Код состояния<br>
-	<%= text_field_tag 'state', '1' %><br>
-	Удалить заказ<br>
-	<%= text_field_tag 'delzak', '1' %><br>
-	<%= submit_tag 'Save' %>
-<% end %>
-<hr>
 <%= link_to "Послать сообщение обновления таблиц", api_refresh_orders_path(current_user.login, current_user.password) %>
 <hr>
 <%= form_tag(api_dispreg_path(current_user.login,current_user.password), method: :post, authenticity_token: false) do -%>
