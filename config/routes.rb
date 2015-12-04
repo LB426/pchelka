@@ -7,8 +7,11 @@ Bee2::Application.routes.draw do
   
   # поставить машину в очередь в определённый регион
   post "api/:login/:password/queue" => 'api#queue_create',      :as => 'api_queue_create'
+  # просмотр очереди
   get  "api/:login/:password/queue" => 'api#queue',             :as => 'api_queue'
+  # переключение режима обработки очереди 0 - автоматически, 1 - ручной
   post "api/:login/:password/mpinq" => 'api#queue_exec_manual', :as => 'api_queue_exec_manual'
+  # удалить из очереди
   delete  "api/:login/:password/queue" => 'api#queue_remove_car',  :as => 'api_queue_remove_car' 
 ###############################################################
 # работа с заказами для новой андроидной программы

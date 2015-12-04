@@ -407,7 +407,7 @@ class ApiController < ApplicationController
   def setcoord
     res = { :error => "none", :result => nil }
     @user = User.authenticate(params[:login], params[:password])
-    if @user
+    if @user && !params[:lat].empty? && !params[:lon].empty? 
       track = Track.new
       track.user_id = @user.id
       track.lat = params[:lat]
@@ -418,7 +418,7 @@ class ApiController < ApplicationController
         execqueue(@user)
       end
     else
-      res = { :error => "ERROR: Login or password incorrect", :result => nil }
+      res = { :error => "ERROR: Login or password incorrect or lat lon is empty", :result => nil }
     end
     render :json => res
   end
@@ -743,17 +743,34 @@ private
   def execqueue(user, region_id = nil)
     # если не в очереди и не на заказе то поставь в очередь
     if !inqueue?(user) && !onorder?(user)
+      logger.debug "машина НЕ в очереди и НЕ на заказе"
       if user.mpinq == true # в БД 1
+        logger.debug "ручное помещение в очередь"
         pushin_to_region_queue(user,region_id) if region_id != nil
       else
+        logger.debug "автоматическое помещение в очередь используя последние координаты"
         pushin_to_region_queue_use_real_coord(user)
       end
     end
+    # если в очереди и не на заказе
+    if inqueue?(user) && !onorder?(user)
+      logger.debug "машина в очереди и НЕ на заказе"
+      if user.mpinq == true # в БД 1
+        logger.debug "ручное помещение в очередь"
+        pushin_to_region_queue(user,region_id) if region_id != nil
+      else
+        logger.debug "автоматическое помещение в очередь используя последние координаты"
+        remove_from_queue(user)
+        pushin_to_region_queue_use_real_coord(user)
+      end
+    else     
+      logger.debug "машина и в очереди и на заказе"
+    end
     # если на заказе то удалить из очереди
     if onorder?(user)
+      logger.debug "машина на заказе"
       remove_from_queue(user)
     end
-    
   end
   
   # проверяет машина в очереди или нет
@@ -784,15 +801,18 @@ private
         if targetregion.contains_point?(point)
           PointQueue.create(point_id: region.id, car: user.car, state: 1)
           ishit = true
+          logger.debug "попал в регион: #{region.name}"
           break
         end
       end
     end
     if ishit == false
       # если не попал ни в один из заранее настроенных регионов
-      outofregion = Defset.find_by_name('вне зоны')
+      outofregion = Defset.find_by_name('район вне зоны')
       PointQueue.create(point_id: outofregion.id, car: user.car, state: 1)
+      logger.debug "попал в регион: #{region.name}"
     end
+    
   end
 
   def pushin_to_region_queue(user, region_id)
@@ -805,6 +825,7 @@ private
   end
   
   def remove_from_queue(user)
+    logger.debug "удалить из очереди"
     PointQueue.where(:car => user.car).destroy_all
   end
 
