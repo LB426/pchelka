@@ -591,7 +591,7 @@ class ApiController < ApplicationController
     if @user
       unless params[:order_id].nil? && params[:car].nil?
         logger.debug "order_id=#{params[:order_id]} , car=#{params[:car]}"
-        Zakazi.where("zakaz = #{params[:order_id]}").limit(1).update_all(car: @user.car)
+        Zakazi.where("zakaz = #{params[:order_id]}").limit(1).update_all(car: @user.car, uvedomlen: 2)
         send_ref
       else
         res = { :error => "order_id or car is nil", :result => nil }
@@ -609,7 +609,7 @@ class ApiController < ApplicationController
     if @user
       unless params[:order_id].nil? && params[:car].nil?
         logger.debug "order_id=#{params[:order_id]} , car=#{params[:car]}"
-        Zakazi.where("zakaz = #{params[:order_id]}").limit(1).update_all(car: nil)
+        Zakazi.where("zakaz = #{params[:order_id]}").limit(1).update_all(car: nil, uvedomlen: 3)
         send_ref
       else
         res = { :error => "order_id or car is nil", :result => nil }
