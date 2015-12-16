@@ -590,8 +590,13 @@ class ApiController < ApplicationController
     @user = User.authenticate(params[:login], params[:password])
     if @user
       unless params[:order_id].nil? && params[:car].nil?
-        logger.debug "order_id=#{params[:order_id]} , car=#{params[:car]}"
-        Zakazi.where("zakaz = #{params[:order_id]}").limit(1).update_all(car: @user.car, uvedomlen: 2)
+        o = Zakazi.where("(zakaz = #{params[:order_id]}) AND (car IS NULL)").limit(1).update_all(car: @user.car, uvedomlen: 2)
+        if o == 1
+          res = { :error => "none", :result => "заказ принял #{@user.car}"}
+        else
+          z = Zakazi.where("zakaz = #{params[:order_id]}").limit(1)
+          res = { :error => "error", :result => "заказ принял #{z[0].car}" }
+        end
         send_ref
       else
         res = { :error => "order_id or car is nil", :result => nil }
