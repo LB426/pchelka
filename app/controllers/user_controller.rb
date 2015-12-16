@@ -32,24 +32,33 @@ class UserController < ApplicationController
 
   def edit
     @user = User.find(params[:id])
-    @groups = [["постоянный водитель","driver"],
-               ["бомбила","bombila"],
-               ["недоступен","unavailable"]]
+    unless @user.group =~ /admin/
+      @groups = [["постоянный водитель","driver"],
+                 ["бомбила","bombila"],
+                 ["недоступен","unavailable"]]
+    else
+      redirect_to root_url
+      flash[:notice] = "ты админ! не редактируй себя!".html_safe
+    end
   end
 
   def update
     @user = User.find(params[:id])
-    if @user.update(
-                      login: params[:login], 
-                      password: params[:password],
-                      car: params[:car],
-                      cardesc: params[:cardesc],
-                      group: params[:group],
-                      monetary_unit: params[:monetary_unit],
-                    )
-      flash[:notice] = "Данные пользователя <strong>#{@user.login}</strong> изменены успешено".html_safe
+    unless @user.group =~ /admin/
+      if @user.update(
+                        login: params[:login], 
+                        password: params[:password],
+                        car: params[:car],
+                        cardesc: params[:cardesc],
+                        group: params[:group],
+                        monetary_unit: params[:monetary_unit],
+                      )
+        flash[:notice] = "Данные пользователя <strong>#{@user.login}</strong> изменены успешено".html_safe
+      else
+        flash[:error] = 'Данные пользователя <strong>#{@user.login}</strong> НЕ изменены'.html_safe
+      end
     else
-      flash[:error] = 'Данные пользователя <strong>#{@user.login}</strong> НЕ изменены'.html_safe
+      flash[:notice] = "ты админ! не редактируй себя!".html_safe
     end
     redirect_to user_showall_path
   end
