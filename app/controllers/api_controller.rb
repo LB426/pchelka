@@ -442,26 +442,44 @@ class ApiController < ApplicationController
 
   def getlastdrivercoord
     res = { :error => "none", :result => nil }
+    @coordinates = Array.new
     drivers_in_queue = PointQueue.where("point_id > 0")
-    if drivers_in_queue
-      @coordinates = []
+    if drivers_in_queue.size > 0
       drivers_in_queue.each do |diq|
         user = User.find_by_car(diq.car)
-        last_coord = Track.where(:user_id => user.id).last
-        if last_coord
-          icon = "marker.png"
-          if user.login =~ /driver/
-            m = user.login.scan(/(\d{1,3})$/)
-            icon = "#{m[0][0]}.png"
+        if user
+          last_coord = Track.where(:user_id => user.id).last
+          if last_coord
+            icon = "marker.png"
+            if user.login =~ /driver/
+              m = user.login.scan(/(\d{1,3})$/)
+              icon = "green/#{m[0][0]}.png"
+            end
+            driver = { :icon => icon, :lat => last_coord.lat, :lon => last_coord.lon }
+            @coordinates << driver
           end
-          driver = { :icon => icon, :lat => last_coord.lat, :lon => last_coord.lon }
-          @coordinates << driver
         end
       end
-      res = @coordinates unless @coordinates.size < 1
-    else
-      res = { :error => "ERROR: no drivers with car>0 in point_queues. api getlastdrivercoord.", :result => nil }
     end
+    drivers_on_order = Zakazi.where("car IS NOT NULL")
+    if drivers_on_order.size > 0
+      drivers_on_order.each do |dio|
+        user = User.find_by_car(dio.car)
+        if user
+          last_coord = Track.where(:user_id => user.id).last
+          if last_coord
+            icon = "marker.png"
+            if user.login =~ /driver/
+              m = user.login.scan(/(\d{1,3})$/)
+              icon = "red/#{m[0][0]}.png"
+            end
+            driver = { :icon => icon, :lat => last_coord.lat, :lon => last_coord.lon }
+            @coordinates << driver
+          end
+        end
+      end
+    end
+    res = @coordinates if @coordinates.size > 0
     render :json => res
   end
 

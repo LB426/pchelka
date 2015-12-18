@@ -1,0 +1,28 @@
+.hoverTable {
+	  width:99%;
+	    border-collapse:collapse;
+		  margin-left:10px;
+		  
+}
+.hoverTable th {
+	  padding:4px; border:#4e95f4 1px solid;text-align: center;background: #ffff99;
+	  
+}
+.hoverTable td {
+	  padding:4px; border:#4e95f4 1px solid;text-align: center;
+	  
+}
+td.bombila {padding:4px; border:#4e95f4 1px solid;text-align: center;background: #EE82EE;}
+td.unavailable {padding:4px; border:#4e95f4 1px solid;text-align: center;background: #34495E;}
+td.unavailable a {color:#FFF;}
+.hoverTable tr {
+	  background: #FFFFFF;
+	  
+}
+.hoverTable tr:hover {
+	  background-color: #98FB98;
+	  
+}
+.formInline {  margin: 0px; padding:0px; }
+.formInline input { margin: 0px; padding:0px; }
+a.score { text-decoration: none; }

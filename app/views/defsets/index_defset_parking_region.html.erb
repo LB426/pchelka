@@ -1,8 +1,10 @@
 <h3>стояночные регионы<h3>
 <hr>
-<table>
+<table class="hovertable">
   <th>название</th>
   <th>координаты</th>
+  <th>&nbsp</th>
+  <th>&nbsp</th>
   <% @regions.each do |region| %>
     <tr>
       <td><%= region.name %></td>
@@ -15,6 +17,14 @@
 		  нет координат
 		<% end %>
       </td>
+	  <td><%= link_to "Изменить", edit_defset_parking_region_path(region) %></td>
+	  <td>
+		<%= form_tag(destroy_defset_parking_region_path(region), method: "post") do %>
+		  <%= submit_tag("Удалить") %>
+		<% end %>
+	  </td>
     </tr>
   <% end %>
 </table>
+<hr>
+<%= link_to 'Создать стояночный регион', new_defset_parking_region_path %>

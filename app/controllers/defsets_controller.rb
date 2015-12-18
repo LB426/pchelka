@@ -1,3 +1,4 @@
+# coding: utf-8
 class DefsetsController < ApplicationController
   before_filter :current_user_admin?
   before_action :set_defset, only: [:show, :edit, :update, :destroy]
@@ -330,14 +331,44 @@ class DefsetsController < ApplicationController
     @regions = Defset.where("name like '%район%'")
   end
 
-  private
-    # Use callbacks to share common setup or constraints between actions.
+  def edit_parking_region
+    @region = Defset.find(params[:id])
+    render :layout => "pickmappoint.html.erb"
+  end
+
+  def update_parking_region
+    @defset = Defset.find(params[:id])
+    a = Array.new
+    points = params[:points]
+    points.each do |point|
+      logger.debug "point: lon=#{point[1][:lon]} lat=#{point[1][:lat]}"
+      a << [ point[1][:lon], point[1][:lat] ]
+    end
+    @defset.value = a
+    if @defset.save
+      flash[:notice] = "Регион <strong>#{@defset.name}</strong> изменён успешено".html_safe
+      redirect_to index_defset_parking_region_path
+    else
+      flash[:error] = 'Изменение НЕ удалась.'
+      redirect_to index_defset_parking_region_path
+    end
+  end
+
+  def destroy_parking_region
+    @defset = Defset.find(params[:id])
+    @defset.destroy
+    flash[:notice] = 'Стояночный регион удален успешено'
+    redirect_to showall_defsets_path
+  end
+  
+private
+
     def set_defset
       @defset = Defset.find(params[:id])
     end
 
-    # Never trust parameters from the scary internet, only allow the white list through.
     def defset_params
       params.require(:defset).permit(:name, :value)
     end
+
 end

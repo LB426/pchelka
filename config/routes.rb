@@ -30,9 +30,12 @@ Bee2::Application.routes.draw do
 ###############################################################
 # работа с настройками по умолчанию
 ###############################################################
-  get  'defset/regions' => 'defsets#index_defset_parking_region', :as => 'index_defset_parking_region'
-  post 'defset/region/create' => 'defsets#create_parking_region', :as => 'create_defset_parking_region'
-  get  'defset/region/new'    => 'defsets#new_parking_region',    :as => 'new_defset_parking_region'
+  post 'defset/region/:id/destroy'=> 'defsets#destroy_parking_region',      :as => 'destroy_defset_parking_region'
+  post 'defset/region/:id/update' => 'defsets#update_parking_region',       :as => 'update_defset_parking_region'
+  get  'defset/region/:id/edit'   => 'defsets#edit_parking_region',         :as => 'edit_defset_parking_region'
+  post 'defset/region/create' => 'defsets#create_parking_region',       :as => 'create_defset_parking_region'
+  get  'defset/region/new'    => 'defsets#new_parking_region',          :as => 'new_defset_parking_region'
+  get  'defset/regions'       => 'defsets#index_defset_parking_region', :as => 'index_defset_parking_region'
 
   post 'defset/time/dec/score/driver/regular/destroy' => 'defsets#destroy_time_dec_score_regdrv', :as => 'destroy_defset_time_dec_score_regdrv' 
   post 'defset/time/dec/score/driver/regular/update'  => 'defsets#update_time_dec_score_regdrv',  :as => 'update_defset_time_dec_score_regdrv' 
