@@ -18,7 +18,10 @@
           new OpenLayers.Projection("EPSG:4326"), 
           new OpenLayers.Projection("EPSG:900913") 
         );
-        icon = new OpenLayers.Icon('/img/'+jsondata[i].icon);
+		var size = new OpenLayers.Size(50,60);
+		var offset = new OpenLayers.Pixel(-(size.w/2), -size.h);
+        icon = new OpenLayers.Icon('/img/'+jsondata[i].icon, size, offset);
+		//icon = new OpenLayers.Icon('/img/'+jsondata[i].icon);
         markers.addMarker(new OpenLayers.Marker(lonlat, icon));
       }
     });

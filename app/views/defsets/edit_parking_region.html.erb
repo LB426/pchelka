@@ -1,0 +1,23 @@
+<hr>
+<p>Регион: <strong><%= @region.name %></strong></p>
+<%= form_tag(update_defset_parking_region_path, method: "post") do %>
+  <% point_counter = 0 %>
+  <div id="points">
+	<% @region.value.each do |r| %>
+	  <p>
+		<% point_counter += 1 %>
+		lon: <input type="text" name="points[<%= point_counter %>][lon]" value="<%= r[0] %>" />
+		lat: <input type="text" name="points[<%= point_counter %>][lat]" value="<%= r[1] %>" />
+	  </p>
+	<% end %>
+  </div>
+<script>
+  var point_counter = <%= point_counter %>;
+</script>
+  <p>
+	<a href="#" id="add_point">Добавить точку</a>
+  </p>
+  <p>
+	<%= submit_tag("Изменить") %>
+  </p>
+<% end %>
