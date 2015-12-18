@@ -453,7 +453,7 @@ class ApiController < ApplicationController
             icon = "marker.png"
             if user.login =~ /driver/
               m = user.login.scan(/(\d{1,3})$/)
-              icon = "#{m[0][0]}.png"
+              icon = "green/#{m[0][0]}.png"
             end
             driver = { :icon => icon, :lat => last_coord.lat, :lon => last_coord.lon }
             @coordinates << driver
@@ -471,7 +471,7 @@ class ApiController < ApplicationController
             icon = "marker.png"
             if user.login =~ /driver/
               m = user.login.scan(/(\d{1,3})$/)
-              icon = "#{m[0][0]}.png"
+              icon = "red/#{m[0][0]}.png"
             end
             driver = { :icon => icon, :lat => last_coord.lat, :lon => last_coord.lon }
             @coordinates << driver
