@@ -31,47 +31,32 @@ class ApiController < ApplicationController
       else
         @user.update_attribute(:ip, request.env["HTTP_X_FORWARDED_FOR"])
       end     
-       
-      ###########################################################################
-      logger.debug "-------------->>>>>>>>>>>"
       @regions = Defset.where("name like '%район%'").distinct
-      logger.debug "@regions: #{@regions.size}"
       @num_queues = @regions.size
       @points = {}
       counter = 1
       @regions.each do |region|
-        @points[counter] = {'name'=>region.name,'queue'=>[]}
+        regname = region.name.gsub("район","")
+        @points[counter] = {'name'=>regname,'queue'=>[]}
         pqueue = PointQueue.where("point_id = ?",region.id).order("created_at ASC")
-        logger.debug "counter: #{counter}, pqueue: #{pqueue.size}, regname: #{region.name}"
         if pqueue.size > 0
           pqueue.each do |r|
             @points[counter]['queue'] << { 'car_num' => r.car, 'car_state' => r.state }
           end
           logger.debug "@points[#{counter}]: #{@points[counter]}"
         end
-        
         counter += 1
       end
-      logger.debug "@points: #{@points}"
-      
       @max_col = 0
-      
       for i in 1..@num_queues do
         if @points[i]['queue'].size > @max_col
           @max_col = @points[i]['queue'].size
         end
       end
-      logger.debug "@max_col: #{@max_col}"
-      
     else
       res = { :error => "Login or password incorrect", :result => nil }
       render :json => res
     end
-
-#    rescue Exception => e
-#      logger.debug "Exception in ApiController queue: #{e.message} "
-#      res = { :error => e.message, :result => nil }
-#      render :json => res
   end
   
   def test
