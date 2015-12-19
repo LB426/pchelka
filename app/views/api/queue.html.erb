@@ -22,7 +22,6 @@
 	  <td><div align="left"><%= @points[i]['name'] %></div></td>
 	  <% unless @points[i]['queue'].empty? %>
 		<% @points[i]['queue'].each do |q| %>
-		  <% logger.debug "qqqqq: #{q}" %>
 		  <% if q['car_num'] == @user.car %>
 			<td bgcolor="Magenta" align="center">
 			  <font color="black" face="Geneva, Arial" size="3">
