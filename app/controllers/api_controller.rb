@@ -608,12 +608,12 @@ class ApiController < ApplicationController
     @user = User.authenticate(params[:login], params[:password])
     if @user
       unless params[:order_id].nil? && params[:car].nil?
-        o = Zakazi.where("(zakaz = #{params[:order_id]}) AND (car IS NULL)").limit(1).update_all(car: @user.car, uvedomlen: 2)
+        o = Zakazi.where("(zakaz = #{params[:order_id]}) AND ((car IS NULL) OR (car = #{@user.car}))").limit(1).update_all(car: @user.car, uvedomlen: 2)
         if o == 1
-          res = { :error => "none", :result => "заказ принял #{@user.car}"}
+          res = { :error => "none", :result => "заказ назначен мне: #{@user.car}"}
         else
           z = Zakazi.where("zakaz = #{params[:order_id]}").limit(1)
-          res = { :error => "error", :result => "заказ принял #{z[0].car}" }
+          res = { :error => "error", :result => "заказ принял: #{z[0].car}" }
         end
         send_ref
       else
