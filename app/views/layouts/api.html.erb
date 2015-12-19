@@ -3,8 +3,14 @@
 <head>
   <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
   <title>Такси пчёлка</title>
+  <script type="text/JavaScript">
+  function timeRefresh(timeoutPeriod)
+  {
+	setTimeout("location.reload(true);",timeoutPeriod);
+  }
+  </script>
 </head>
-<body>
+<body onload="JavaScript:timeRefresh(10000);">
   <%= yield %>
 </body>
 </html>

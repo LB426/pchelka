@@ -43,7 +43,6 @@ class ApiController < ApplicationController
           pqueue.each do |r|
             @points[counter]['queue'] << { 'car_num' => r.car, 'car_state' => r.state }
           end
-          logger.debug "@points[#{counter}]: #{@points[counter]}"
         end
         counter += 1
       end
