@@ -762,13 +762,15 @@ private
     # если в очереди и не на заказе
     if inqueue?(user) && !onorder?(user)
       logger.debug "машина в очереди и НЕ на заказе"
-      if user.mpinq == true # в БД 1
+      if user.mpinq == true # в БД 1, ruchnaya ochered
         logger.debug "ручное помещение в очередь"
         pushin_to_region_queue(user,region_id) if region_id != nil
       else
-        logger.debug "автоматическое помещение в очередь используя последние координаты"
-        remove_from_queue(user)
-        pushin_to_region_queue_use_real_coord(user)
+        # avtomaticheskaya ochered
+        # v etom sluchae vsegda snavitsia v konets ocheredi
+        #logger.debug "автоматическое помещение в очередь используя последние координаты"
+        #remove_from_queue(user)
+        #pushin_to_region_queue_use_real_coord(user)
       end
     else     
       logger.debug "машина и в очереди и на заказе"
