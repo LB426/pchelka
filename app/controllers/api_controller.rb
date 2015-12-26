@@ -716,6 +716,55 @@ class ApiController < ApplicationController
     end
     render :json => res    
   end
+
+  def routetoclient
+    res = { :error => "none", :result => nil }
+    @user = User.authenticate(params[:login], params[:password])
+    if @user
+      @order = Zakazi.where("car = ?", @user.car).limit(1)
+      addr = "#{@order[0].adres} тихорецк"
+      uri = URI("http://nominatim.openstreetmap.org/search.php")
+      country = "Russia"
+      city = "Тихорецк"
+      street = "#{@order[0].adres}"
+      params = { :country => country, :city => city , :street => street,
+                 :format => "json", :addressdetails => 1 }
+      uri.query = URI.encode_www_form(params)
+      resp = Net::HTTP.get_response(uri)
+      if resp.is_a?(Net::HTTPSuccess)
+        # logger.debug resp.body
+        res_json = JSON.parse(resp.body)
+        if res_json.size >= 1
+          o = res_json[0]
+          lat_end = o["lat"]
+          lon_end = o["lon"]
+          last_coord = Track.where(:user_id => @user.id).last
+          lat_beg = last_coord.lat
+          lon_beg = last_coord.lon
+          uri = URI("http://router.project-osrm.org/viaroute?" +
+                    "loc=#{lat_beg},#{lon_beg}&" + "loc=#{lat_end},#{lon_end}&" +
+                    "instructions=true")
+          #logger.debug "query: #{uri}"
+          resp = Net::HTTP.get(uri)
+          #logger.debug resp
+          res_json = JSON.parse(resp)
+          logger.debug "res json: #{res_json["status"]}"
+          if res_json["status"] == 200
+            res = { :error => "none", :result => res_json }
+          else
+            res = { :error => "router.project-osrm.org status non 200 ", :result => nil }
+          end
+        else
+          res = { :error => "nominatim find result for '#{street}' = 0", :result => nil }
+        end
+      else
+        res = { :error => "Response error", :result => nil }
+      end
+    else
+      res = { :error => "Login or password incorrect", :result => nil }
+    end
+    render :json => res
+  end
   
 private
 
