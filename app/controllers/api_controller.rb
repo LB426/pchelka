@@ -764,6 +764,12 @@ class ApiController < ApplicationController
       res = { :error => "Login or password incorrect", :result => nil }
     end
     render :json => res
+
+    rescue Exception => e
+      logger.debug "Exception in ApiController order_update : #{e.message} "
+      res = { :error => "EXCEPTION: " + e.message, :result => nil }
+      render :json => res
+    
   end
   
 private
