@@ -741,16 +741,23 @@ class ApiController < ApplicationController
           last_coord = Track.where(:user_id => @user.id).last
           lat_beg = last_coord.lat
           lon_beg = last_coord.lon
-          uri = URI("http://router.project-osrm.org/viaroute?" +
-                    "loc=#{lat_beg},#{lon_beg}&" + "loc=#{lat_end},#{lon_end}&" +
-                    "instructions=true")
+          uri = URI("https://graphhopper.com/api/1/route?" +
+                    "point=#{lat_beg},#{lon_beg}&" + "point=#{lat_end},#{lon_end}&" +
+                    "type=json&" +
+                    #"debug=true&" +
+                    "vehicle=car&locale=en&points_encoded=true&key=4dc134dc-6c96-49e6-a232-84d878f3abcf")
           #logger.debug "query: #{uri}"
-          resp = Net::HTTP.get(uri)
-          #logger.debug resp
-          res_json = JSON.parse(resp)
-          logger.debug "res json: #{res_json["status"]}"
-          if res_json["status"] == 200
-            res = { :error => "none", :result => res_json }
+          resp = Net::HTTP.get_response(uri)
+          #logger.debug "resp code: #{resp.code}, resp.code.class: #{resp.code.class}"
+          #logger.debug "resp body: #{resp.body}"
+          body = resp.body.force_encoding("UTF-8")
+          res_json = JSON.parse(body)
+          #logger.debug "res json size: #{res_json.size}, class: #{res_json.class}, body: #{resp.body}"
+          if resp.code == '200'
+            paths = res_json["paths"]
+            points = paths[0]["points"]
+            #logger.debug "points: #{points}"
+            res = { :error => "none", :result => { "route_geometry" => points }}
           else
             res = { :error => "router.project-osrm.org status non 200 ", :result => nil }
           end
@@ -765,10 +772,10 @@ class ApiController < ApplicationController
     end
     render :json => res
 
-    rescue Exception => e
-      logger.debug "Exception in ApiController order_update : #{e.message} "
-      res = { :error => "EXCEPTION: " + e.message, :result => nil }
-      render :json => res
+    #rescue Exception => e
+    #  logger.debug "Exception in ApiController order_update : #{e.message} "
+    #  res = { :error => "EXCEPTION: " + e.message, :result => nil }
+    #  render :json => res
     
   end
   
