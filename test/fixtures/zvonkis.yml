@@ -1,0 +1,33 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  num: 1
+  telefon: MyString
+  kode: MyString
+  dat: 2016-03-22
+  tim: 2016-03-22 13:42:42
+  adres: MyString
+  car: 1
+  beg: 2016-03-22 13:42:42
+  en: 2016-03-22 13:42:42
+  cost: 1
+  priznak: MyString
+  zakaz: 1
+  place_end: MyString
+  memo: MyString
+
+two:
+  num: 1
+  telefon: MyString
+  kode: MyString
+  dat: 2016-03-22
+  tim: 2016-03-22 13:42:42
+  adres: MyString
+  car: 1
+  beg: 2016-03-22 13:42:42
+  en: 2016-03-22 13:42:42
+  cost: 1
+  priznak: MyString
+  zakaz: 1
+  place_end: MyString
+  memo: MyString

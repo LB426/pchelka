@@ -1,0 +1,39 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  zakaz: 1
+  telefon: MyString
+  kode: MyString
+  dat: 2016-03-22
+  tim: 2016-03-22 13:49:20
+  adres: MyString
+  car: 1
+  beg: 2016-03-22 13:49:20
+  en: 2016-03-22 13:49:20
+  place_end: MyString
+  cost: 1
+  priznak: MyString
+  memo: MyString
+  predvar: MyString
+  working: 1
+  uvedomlen: 1
+  vip: 1
+
+two:
+  zakaz: 1
+  telefon: MyString
+  kode: MyString
+  dat: 2016-03-22
+  tim: 2016-03-22 13:49:20
+  adres: MyString
+  car: 1
+  beg: 2016-03-22 13:49:20
+  en: 2016-03-22 13:49:20
+  place_end: MyString
+  cost: 1
+  priznak: MyString
+  memo: MyString
+  predvar: MyString
+  working: 1
+  uvedomlen: 1
+  vip: 1
