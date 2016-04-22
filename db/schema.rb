@@ -11,7 +11,20 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160322105213) do
+ActiveRecord::Schema.define(version: 20160422140117) do
+
+  create_table "cars", force: :cascade do |t|
+    t.integer  "num",        limit: 4
+    t.date     "begin_date"
+    t.time     "begin_time"
+    t.date     "end_date"
+    t.time     "end_time"
+    t.integer  "summa",      limit: 4
+    t.integer  "week",       limit: 4
+    t.string   "telef",      limit: 255
+    t.datetime "created_at",             null: false
+    t.datetime "updated_at",             null: false
+  end
 
   create_table "changeqcars", force: :cascade do |t|
     t.integer  "car",        limit: 4
@@ -21,11 +34,31 @@ ActiveRecord::Schema.define(version: 20160322105213) do
     t.datetime "updated_at"
   end
 
+  create_table "cqueues", force: :cascade do |t|
+    t.integer  "num",        limit: 4
+    t.integer  "car",        limit: 4
+    t.integer  "state",      limit: 4
+    t.string   "mesto",      limit: 255
+    t.integer  "row",        limit: 4
+    t.integer  "col",        limit: 4
+    t.datetime "created_at",             null: false
+    t.datetime "updated_at",             null: false
+  end
+
   create_table "defsets", force: :cascade do |t|
     t.string   "name",       limit: 255
     t.text     "value",      limit: 65535
     t.datetime "created_at",               null: false
     t.datetime "updated_at",               null: false
+  end
+
+  create_table "disps", force: :cascade do |t|
+    t.integer  "num",        limit: 4
+    t.integer  "day",        limit: 4
+    t.integer  "week",       limit: 4
+    t.integer  "working",    limit: 4
+    t.datetime "created_at",           null: false
+    t.datetime "updated_at",           null: false
   end
 
   create_table "ledgers", id: false, force: :cascade do |t|

@@ -1,0 +1,17 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  num: 1
+  car: 1
+  state: 1
+  mesto: MyString
+  row: 1
+  col: 1
+
+two:
+  num: 1
+  car: 1
+  state: 1
+  mesto: MyString
+  row: 1
+  col: 1
