@@ -145,47 +145,8 @@ class ApiController < ApplicationController
     res = { :error => "none", :result => nil }
     @user = User.authenticate(params[:login], params[:password])
     if @user
-      if params[:order_id].nil?
-        order = Zakazi.where(:car => @user.car)
-        if order.size == 1
-          zvonok = Zvonki.where(:num => order[0].zakaz)
-          if zvonok.size == 1
-            Zvonki.where(:num => order[0].zakaz).limit(1).update_all(
-              telefon: order[0].telefon, 
-              kode: order[0].kode, 
-              dat: order[0].dat, 
-              tim: order[0].tim, 
-              adres: order[0].adres,
-              car: order[0].car,
-              beg: order[0].beg,
-              en: order[0].en,
-              cost: order[0].cost,
-              priznak: order[0].priznak )
-          end
-          if zvonok.size == 0
-            z = Zvonki.new
-            z.telefon = order[0].telefon
-            z.kode = order[0].kode
-            z.dat = order[0].dat
-            z.tim = order[0].tim
-            z.adres = order[0].adres
-            z.car = @user.car
-            z.beg = order[0].beg
-            z.en = order[0].en
-            z.cost = order[0].cost
-            z.priznak = order[0].priznak
-            z.save
-          end
-          Zakazi.where(:car => @user.car).delete_all
-        else
-          if order.size > 1
-            Zakazi.where(:zakaz => order[0].zakaz).delete_all
-            res = { :error => "amount orders in table zakazi #{order.size}", :result => nil }
-          end
-        end
-      else
-        Zakazi.where(:zakaz => params[:order_id]).delete_all
-      end
+      order = Zakazi.find_by_car(@user.car)
+
       # шлем сообщение обновления таблиц
       if send_ref != true
         res = { :error => "message REF send ERROR", :result => nil }
