@@ -18,9 +18,9 @@ rake db:seed
 делаем так на пустой базе:
 mysql
 use databasename;
-alter table abonenties collate='cp1251_general_ci';
-alter table zakazis collate='cp1251_general_ci';
-alter table zvonkis collate='cp1251_general_ci';
+alter table zvonkis CONVERT TO CHARACTER SET cp1251 COLLATE cp1251_general_ci;
+alter table abonenties CONVERT TO CHARACTER SET cp1251 COLLATE cp1251_general_ci;
+alter table zakazis CONVERT TO CHARACTER SET cp1251 COLLATE cp1251_general_ci;
 \q
 
 2) Создание админского пользователя:
