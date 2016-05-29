@@ -1,0 +1,35 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  num: 1
+  telefon: MyString
+  kode: MyString
+  adres: MyString
+  dat: 2016-05-18
+  tim: 2016-05-18 18:36:50
+  cost: 1
+  balans: 1
+  poezdok: 1
+  otlog: 1
+  priz: 1
+  fio: MyString
+  telefon2: MyString
+  first_d: 2016-05-18
+  first_t: 2016-05-18 18:36:50
+
+two:
+  num: 1
+  telefon: MyString
+  kode: MyString
+  adres: MyString
+  dat: 2016-05-18
+  tim: 2016-05-18 18:36:50
+  cost: 1
+  balans: 1
+  poezdok: 1
+  otlog: 1
+  priz: 1
+  fio: MyString
+  telefon2: MyString
+  first_d: 2016-05-18
+  first_t: 2016-05-18 18:36:50

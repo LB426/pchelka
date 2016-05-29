@@ -3,7 +3,9 @@ require 'net/http'
 
 class ApiController < ApplicationController
   protect_from_forgery :except => [ 
+                                    :order_create,
                                     :order_update, 
+                                    :order_refuse_priz,
                                     :push_in_queue, 
                                     :order_destroy, 
                                     :state_update, 
@@ -102,6 +104,48 @@ class ApiController < ApplicationController
       render :json => res
   end
 
+  # на самом деле таблица zvonkis - это все заказы поступившие, zvonkis - потому что разраб так придумал!!!
+  # zakazis - это текущие заказы которые удаляются по мере обработки, а инфа о них остаётся в zvonkis
+  # также zvonkis - это лог входящих звонков. Сапёров изначально писал не диспетчерскую программу а обработчик входящих звонков!!! 
+  def order_create
+    res = { :error => "none", :result => nil }
+    logger.debug "login: #{params[:login]} password: #{params[:password]}"
+    @user = User.authenticate(params[:login], params[:password])
+    if @user
+      # проверяем а не назначен ли заказ водителю
+      zak = Zakazi.where("car = ?", params[:car])
+      if zak.size == 0
+        zvonki = Zvonki.new
+        zvonki.telefon = params[:telefon]
+        zvonki.kode = params[:kode]
+        zvonki.dat = params[:dat]
+        zvonki.tim = params[:tim]
+        addr = params[:adres]
+        zvonki.adres = addr.force_encoding("cp1251").encode("utf-8", undef: :replace)
+        priznak = params[:priznak]
+        zvonki.priznak = priznak.force_encoding("cp1251").encode("utf-8", undef: :replace)
+        zvonki.car = params[:car]
+        zvonki.save
+        order = Zakazi.new
+        order.zakaz = zvonki.id
+        order.telefon = zvonki.telefon
+        order.kode = zvonki.kode
+        order.dat = zvonki.dat
+        order.tim = zvonki.tim
+        order.adres = zvonki.adres
+        order.priznak = zvonki.priznak
+        order.car = zvonki.car
+        order.save
+        res = { :error => "none", :result => "Заказ назначен водителю #{order.car} успешно" }
+      else
+        res = { :error => "Эта машина уже на заказе, car=#{params[:car]}, id заказа: #{zak[0].id}", :result => nil }
+      end
+    else
+      res = { :error => "Login or password incorrect", :result => nil }
+    end
+    render :json => res
+  end
+
   def order_update
     @user = User.authenticate(params[:login], params[:password])
     if @user
@@ -146,11 +190,45 @@ class ApiController < ApplicationController
     @user = User.authenticate(params[:login], params[:password])
     if @user
       order = Zakazi.find_by_car(@user.car)
+      abonent = Abonenty.find_by_kode(order.kode)
+      if abonent
+        if order.priznak == "очередная"
+            abonent.balans = abonent.balans + 1
+        else
+          if abonent
+            priz_count = Defset.find_by_name("количество призовых поездок").value
+            abonent.balans = abonent.balans - priz_count.to_i + 1
+          end
+        end
+        abonent.save
+      end
+      zvonok = Zvonki.find_by_id(order.zakaz)
+      zvonok.adres = order.adres
+      zvonok.car = order.car
+      zvonok.cost = params[:sum]
+      zvonok.priznak = order.priznak
+      zvonok.save
+      order.destroy
 
       # шлем сообщение обновления таблиц
-      if send_ref != true
-        res = { :error => "message REF send ERROR", :result => nil }
-      end
+      #if send_ref != true
+      #  res = { :error => "message REF send ERROR", :result => nil }
+      #end
+      send_ref
+    else
+      res = { :error => "Login or password incorrect", :result => nil }
+    end
+    render :json => res
+  end
+
+  def order_refuse_priz
+    res = { :error => "none", :result => nil }
+    @user = User.authenticate(params[:login], params[:password])
+    if @user
+      order = Zakazi.find_by_zakaz(params[:order_id])
+      order.priznak = "очередная"
+      order.save
+      send_ref
     else
       res = { :error => "Login or password incorrect", :result => nil }
     end
@@ -547,22 +625,29 @@ class ApiController < ApplicationController
     render :json => res, content_type: "application/json"
   end
   
-  # поставить себя на заказ
+  # поставить машину на заказ
   def orderaddcar
     res = { :error => "none", :result => nil }
     @user = User.authenticate(params[:login], params[:password])
     if @user
-      unless params[:order_id].nil? && params[:car].nil?
-        o = Zakazi.where("(zakaz = #{params[:order_id]}) AND ((car IS NULL) OR (car = #{@user.car}))").limit(1).update_all(car: @user.car, uvedomlen: 2)
-        if o == 1
-          res = { :error => "none", :result => "заказ назначен мне: #{@user.car}"}
-        else
-          z = Zakazi.where("zakaz = #{params[:order_id]}").limit(1)
-          res = { :error => "error", :result => "заказ принял: #{z[0].car}" }
+      unless params[:order_id].nil?
+        #o = Zakazi.where("(zakaz = #{params[:order_id]}) AND ((car IS NULL) OR (car = #{@user.car}))").limit(1).update_all(car: @user.car, uvedomlen: 2)
+        #order = Zakazi.where("(zakaz = ?) AND ((car IS NULL) OR (car = ?))", params[:order_id], @user.car)
+        order = Zakazi.where("car = ?", @user.car)
+        if order.size == 1
+          res = { :error => "error", :result => "this car #{@user.car} alredy on order #{order[0].id}"}
+        elsif order.size == 0
+          neworder = Zakazi.find_by_zakaz(params[:order_id])
+          neworder.car = @user.car
+          neworder.uvedomlen = 2
+          neworder.save
+          res = { :error => "none", :result => "car #{@user.car} set on order: #{params[:order_id]}" }
+        elsif order.size > 1
+          res = { :error => "BIG ERROR!!!", :result => "BIG ERROR!!! found #{order.size} orders for order_id: #{params[:order_id]}" }
         end
         send_ref
       else
-        res = { :error => "order_id or car is nil", :result => nil }
+        res = { :error => "order_id is nil", :result => nil }
       end
     else
       res = { :error => "Login or password incorrect", :result => nil }

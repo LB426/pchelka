@@ -83,7 +83,9 @@ class DefsetsController < ApplicationController
   end
 
   def edit_taximeter
+    @monetary_unit = Defset.find_by_name("денежная единица").value
     @defset = Defset.find_by_name("taximeter")
+    logger.debug "defset: #{@defset.value[:cost_km_city]}"
     @cost_km_city = @defset.value["cost_km_city"]
     @cost_km_suburb = @defset.value["cost_km_suburb"]
     @cost_km_intercity = @defset.value["cost_km_intercity"]
@@ -183,6 +185,7 @@ class DefsetsController < ApplicationController
       @defset.name = params[:name]
       @defset.value = params[:value]
       if @defset.save
+        logger.debug "@defset.value.class: #{@defset.value.class}"
         redirect_to showall_defsets_path, notice: 'Настройки денежной единицы изменены успешно.'
       else
         flash[:notice] = "денежную единицу обновить не удалось"

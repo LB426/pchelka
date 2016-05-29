@@ -41,6 +41,22 @@ Defset.create(name: "район Парковый",
                        [ '40.18022060', '45.83355372' ],
                        [ '40.14073849', '45.82536023' ]])
 
+Defset.create(name: "денежная единица", value: "руб")
 
+Defset.create(name: "taximeter",
+              value: {
+                        "cost_km_city" => 10,
+                        "cost_km_suburb" => 11,
+                        "cost_km_intercity" => 12,
+                        "cost_km_n1" => 13,
+                        "cost_stopping" => 5,
+                        "cost_passenger_boarding_day" => 30,
+                        "cost_passenger_boarding_night" => 40,
+                        "cost_passenger_pre_boarding_day" => 50,
+                        "cost_passenger_pre_boarding_night" => 60
+                      })
 
+Defset.create(name: "количество призовых поездок", value: 8)
 
+Defset.create(name: "кредитная политика постоянный водитель",
+              value: { "method" => "one_per_24_hours", "cost" => 150 })
