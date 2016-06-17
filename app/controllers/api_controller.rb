@@ -61,8 +61,13 @@ class ApiController < ApplicationController
   end
   
   def test
-  	current_user?
-    render :layout => 'application'
+  	#current_user?
+    if current_user_admin?
+      render :layout => 'application'
+    else
+      redirect_to root_url
+      flash[:notice] = "Вы не администратор!".html_safe
+    end
   end
 
   def order
@@ -190,31 +195,30 @@ class ApiController < ApplicationController
     @user = User.authenticate(params[:login], params[:password])
     if @user
       order = Zakazi.find_by_car(@user.car)
-      abonent = Abonenty.find_by_kode(order.kode)
-      if abonent
-        if order.priznak == "очередная"
-            abonent.balans = abonent.balans + 1
-        else
-          if abonent
-            priz_count = Defset.find_by_name("количество призовых поездок").value
-            abonent.balans = abonent.balans - priz_count.to_i + 1
+      if order
+        abonent = Abonenty.find_by_kode(order.kode)
+        if abonent
+          if order.priznak == "очередная"
+              abonent.balans = abonent.balans + 1
+          else
+            if abonent
+              priz_count = Defset.find_by_name("количество призовых поездок").value
+              abonent.balans = abonent.balans - priz_count.to_i + 1
+            end
           end
+          abonent.save
         end
-        abonent.save
+        zvonok = Zvonki.find_by_id(order.zakaz)
+        zvonok.adres = order.adres
+        zvonok.car = order.car
+        zvonok.cost = params[:sum]
+        zvonok.priznak = order.priznak
+        zvonok.save
+        order.destroy
+        send_ref
+      else
+        res = { :error => "ERROR. Order not found for car #{@user.car}", :result => nil }
       end
-      zvonok = Zvonki.find_by_id(order.zakaz)
-      zvonok.adres = order.adres
-      zvonok.car = order.car
-      zvonok.cost = params[:sum]
-      zvonok.priznak = order.priznak
-      zvonok.save
-      order.destroy
-
-      # шлем сообщение обновления таблиц
-      #if send_ref != true
-      #  res = { :error => "message REF send ERROR", :result => nil }
-      #end
-      send_ref
     else
       res = { :error => "Login or password incorrect", :result => nil }
     end
@@ -247,6 +251,7 @@ class ApiController < ApplicationController
       if send_ref != true
         res = { :error => "message REF send ERROR", :result => nil }
       end
+      send_ref
     else
       res = { :error => "Login or password incorrect", :result => nil }
     end
@@ -673,24 +678,37 @@ class ApiController < ApplicationController
     render :json => res
   end
 
-  # отработка нажатия на кнопку расчёт закончен
+  # отработка нажатия на кнопку расчёт закончен в программе для Android
+  # завершение работы с заказом в программе для диспетчера
+  # параметры: login, password, sum
   def ordercomplete
     res = { :error => "none", :result => nil }
     @user = User.authenticate(params[:login], params[:password])
     if @user
-      unless params[:order_id].nil? && params[:cost].nil?
-        logger.debug "order_id=#{params[:order_id]} , cost=#{params[:cost]}"
-        @order = Zakazi.where("zakaz = ? AND car = ?", params[:order_id], @user.car)
-        if @order.size == 1
-          @order.delete_all
-          # поставить машину в очередь для заранее определённого региона
-          execqueue(@user)
-          send_ref
-        else
-          res = { :error => "order not found", :result => nil }
+      order = Zakazi.find_by_car(@user.car)
+      if order
+        abonent = Abonenty.find_by_kode(order.kode)
+        if abonent
+          if order.priznak == "очередная"
+              abonent.balans = abonent.balans + 1
+          else
+            if abonent
+              priz_count = Defset.find_by_name("количество призовых поездок").value
+              abonent.balans = abonent.balans - priz_count.to_i + 1
+            end
+          end
+          abonent.save
         end
+        zvonok = Zvonki.find_by_id(order.zakaz)
+        zvonok.adres = order.adres
+        zvonok.car = order.car
+        zvonok.cost = params[:sum]
+        zvonok.priznak = order.priznak
+        zvonok.save
+        order.destroy
+        send_ref
       else
-        res = { :error => "order_id or car is nil", :result => nil }
+        res = { :error => "ERROR. Order not found for car #{@user.car}", :result => nil }
       end
     else
       res = { :error => "Login or password incorrect", :result => nil }
@@ -719,7 +737,7 @@ class ApiController < ApplicationController
     render :json => res
   end
 
-  # поставить машину в очередь вручную, из андроид приложения
+  # поставить машину в очередь вручную, из андроид приложения и из диспетчерской программы
   def queue_create
     res = { :error => "none", :result => nil }
     @user = User.authenticate(params[:login], params[:password])
@@ -832,8 +850,9 @@ private
   end
 
   def send_message( message = "REF" )
+    logger.debug "посылаю сообщение message: #{message}"
     res = true
-    dispatchers = User.where(group: 'dispatcher')
+    dispatchers = User.where(group: 'dispatcher,driver')
     dispatchers.each do |disp|
       logger.debug "disp.ip = #{disp.ip}"
       unless disp.ip.nil? || disp.ip.empty?
@@ -866,6 +885,7 @@ private
         logger.debug "автоматическое помещение в очередь используя последние координаты"
         pushin_to_region_queue_use_real_coord(user)
       end
+      return
     end
     # если в очереди и не на заказе
     if inqueue?(user) && !onorder?(user)
@@ -880,13 +900,13 @@ private
         #remove_from_queue(user)
         #pushin_to_region_queue_use_real_coord(user)
       end
-    else     
-      logger.debug "машина и в очереди и на заказе"
+      return
     end
     # если на заказе то удалить из очереди
     if onorder?(user)
       logger.debug "машина на заказе"
       remove_from_queue(user)
+      return
     end
   end
   
@@ -935,6 +955,7 @@ private
   def pushin_to_region_queue(user, region_id)
     region = Defset.where("id = ? AND name like '%район%'", region_id)
     if region.size == 1
+      logger.debug "ставлю в очередь вручную водителя #{user.id} на регион #{region_id}"
       PointQueue.create(point_id: region_id, car: user.car, state: 1)
     else
       logger.debug "ERROR: region with id: #{region_id} not found"

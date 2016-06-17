@@ -4,8 +4,9 @@ class ApplicationController < ActionController::Base
   protect_from_forgery with: :exception
   
   helper_method :current_user
-  helper_method :current_user?
   helper_method :current_user_admin?
+  helper_method :current_user_disp?
+  helper_method :current_user_driver?
 
 private
 
@@ -13,21 +14,24 @@ private
     @current_user ||= User.find(session[:user_id]) if session[:user_id]
   end
   
-  def current_user?
-    unless current_user.nil?
-      return true 
-    end
-    flash[:notice] = "your not logged in"
-    redirect_to login_path
-    return false
-  end
-  
   def current_user_admin?
     if current_user && current_user.group =~ /admin/
       return true 
     end
-    flash[:notice] = "no priveleges for this: controller: #{params[:controller]} , action: #{params[:action]}"
-    redirect_to login_path
+    return false
+  end
+
+  def current_user_disp?
+    if current_user && current_user.group =~ /dispatcher/
+      return true 
+    end
+    return false
+  end
+  
+  def current_user_driver?
+    if current_user && current_user.group =~ /driver/
+      return true 
+    end
     return false
   end
 

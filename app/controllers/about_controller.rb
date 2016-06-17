@@ -1,5 +1,3 @@
-require 'remotedb2.rb'
-
 class AboutController < ApplicationController
   def index
   end

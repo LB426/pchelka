@@ -15,6 +15,7 @@ Bee2::Application.routes.draw do
 # построение маршрута
 ###############################################################
   get "api/:login/:password/routetoclient" => 'api#routetoclient', :as => 'api_routeto_client'
+
 ###############################################################
 # манипуляции с очередью
 ###############################################################
@@ -26,6 +27,7 @@ Bee2::Application.routes.draw do
   post "api/:login/:password/mpinq" => 'api#queue_exec_manual', :as => 'api_queue_exec_manual'
   # удалить из очереди
   delete  "api/:login/:password/queue" => 'api#queue_remove_car',  :as => 'api_queue_remove_car' 
+
 ###############################################################
 # работа с заказами для новой андроидной программы
 # #############################################################
@@ -39,8 +41,10 @@ Bee2::Application.routes.draw do
   post "api/:login/:password/order/complete" => 'api#ordercomplete', :as => 'api_order_complete'
   # получить список районов с координатами
   get  "api/:login/:password/defset/regions" => 'api#regions',       :as => 'api_defset_regions'
+
 ###############################################################  
   get 'user/driver/monetary_credit/decrease' => 'user#driver_monetary_credit_dec', :as => 'driver_moncred_dec'
+
 ###############################################################
 # работа с настройками по умолчанию
 ###############################################################
@@ -85,6 +89,8 @@ Bee2::Application.routes.draw do
   get "api/:login/:password/lastposmap" => 'api#lastposmap', :as => 'api_lastposmap'
 
   get "api/:login/:password/taximeter" => 'api#taximeter', :as => 'api_taximeter'
+
+  get 'user/settings/manualqueue' => 'user#mass_manualqueue', :as => 'mupdate_mpinq'
 
   post 'user/:id/score/update' => 'user#update_score', :as => 'update_user_score'
   get 'user/:id/score' => 'user#edit_score', :as => 'edit_user_score'

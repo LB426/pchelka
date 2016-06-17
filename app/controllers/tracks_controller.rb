@@ -1,5 +1,5 @@
 class TracksController < ApplicationController
-  before_filter :current_user?
+  before_filter :current_user_disp?
   before_action :set_track, only: [:edit, :update, :destroy]
 
   def index

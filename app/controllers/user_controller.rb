@@ -26,6 +26,7 @@ class UserController < ApplicationController
     @user.settings = { "taximeter"=> nil, "creditpol" => nil }
     @user.settings["taximeter"] = Defset.find_by_name("taximeter").value
     @user.settings["creditpol"] = Defset.find_by_name("кредитная политика постоянный водитель").value
+    @user.mpinq = 1
     @user.save
     redirect_to user_showall_path
   end
@@ -204,6 +205,17 @@ class UserController < ApplicationController
       end
     end
     redirect_to user_index_path, notice: "Кредитная политика установлена"
+  end
+
+  def mass_manualqueue
+    users = User.where(group: 'driver')
+    if users.size > 0
+      users.each do |user|
+        user.mpinq = 1
+        user.save
+      end
+    end
+    redirect_to user_index_path, notice: "Ручная постановка в очередь установлена всем водителям"
   end
 
   def pwgen(len = 8)

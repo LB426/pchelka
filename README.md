@@ -21,11 +21,16 @@ use databasename;
 alter table zvonkis CONVERT TO CHARACTER SET cp1251 COLLATE cp1251_general_ci;
 alter table abonenties CONVERT TO CHARACTER SET cp1251 COLLATE cp1251_general_ci;
 alter table zakazis CONVERT TO CHARACTER SET cp1251 COLLATE cp1251_general_ci;
-\q
 
 2) Создание админского пользователя:
 rails console
-User.create("login" => "admin", "password" => "1234", "group" => "admin",      "car" => 10001, "cardesc" => "красн Вольво")
-User.create("login" => "disp1", "password" => "1234", "group" => "dispatcher", "car" => 10002, "cardesc" => "белый Вольво")
+User.create("login" => "admin", "password" => "1234", "group" => "admin,dispatcher,driver",      "car" => 10001, "cardesc" => "красн Вольво")
+User.create("login" => "disp1", "password" => "1234", "group" => "dispatcher,driver", "car" => 10002, "cardesc" => "белый Вольво")
 exit
+В поле group перечисляются роли доступные пользователю.
+Если администратор то group должен быть "admin,dispatcher,driver", т.е. он умеет всё что админ + диспетчер + водитель
+Если диспетчер то group должен быть "dispatcher,driver", т.е. он умеет всё что диспетчер + водитель
+Если водитель то ему доступны действия только для водителя.
+
+Проверка работоспособности диспетчерской программы:
 
