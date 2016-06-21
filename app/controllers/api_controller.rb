@@ -680,7 +680,7 @@ class ApiController < ApplicationController
 
   # отработка нажатия на кнопку расчёт закончен в программе для Android
   # завершение работы с заказом в программе для диспетчера
-  # параметры: login, password, sum
+  # параметры: login, password, cost
   def ordercomplete
     res = { :error => "none", :result => nil }
     @user = User.authenticate(params[:login], params[:password])
@@ -702,7 +702,7 @@ class ApiController < ApplicationController
         zvonok = Zvonki.find_by_id(order.zakaz)
         zvonok.adres = order.adres
         zvonok.car = order.car
-        zvonok.cost = params[:sum]
+        zvonok.cost = params[:cost]
         zvonok.priznak = order.priznak
         zvonok.save
         order.destroy
